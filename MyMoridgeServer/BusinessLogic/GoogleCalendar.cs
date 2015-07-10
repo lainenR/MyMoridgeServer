@@ -87,7 +87,7 @@ namespace MyMoridgeServer.BusinessLogic
         {
             try
             {
-                string serviceAccountEmail = Resource.GetAppConfigValue("MoridgeMainCalendarEmail");
+                string serviceAccountEmail = Common.GetAppConfigValue("MoridgeMainCalendarEmail");
                 string keyFile = AppDomain.CurrentDomain.BaseDirectory + "key.p12";
                 var certificate = new X509Certificate2(keyFile, "notasecret", X509KeyStorageFlags.Exportable);
 
@@ -102,7 +102,7 @@ namespace MyMoridgeServer.BusinessLogic
                 GoogleService = new CalendarService(new BaseClientService.Initializer()
                 {
                     HttpClientInitializer = credential,
-                    ApplicationName = Resource.GetAppConfigValue("GoogleApplicationName"),
+                    ApplicationName = Common.GetAppConfigValue("GoogleApplicationName"),
                 });
             }
             catch (Exception ex)
@@ -122,8 +122,8 @@ namespace MyMoridgeServer.BusinessLogic
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                 new ClientSecrets
                 {
-                    ClientId = Resource.GetAppConfigValue("GoogleClientId"),
-                    ClientSecret = Resource.GetAppConfigValue("GoogleClientSecret")
+                    ClientId = Common.GetAppConfigValue("GoogleClientId"),
+                    ClientSecret = Common.GetAppConfigValue("GoogleClientSecret")
                 },
                 new[] { CalendarService.Scope.Calendar },
                 "user",
@@ -135,7 +135,7 @@ namespace MyMoridgeServer.BusinessLogic
                 // Create the service.
                 GoogleService = new CalendarService(new BaseClientService.Initializer
                 {
-                    ApplicationName = Resource.GetAppConfigValue("GoogleApplicationName"),
+                    ApplicationName = Common.GetAppConfigValue("GoogleApplicationName"),
                     HttpClientInitializer = credential,
                 });
 

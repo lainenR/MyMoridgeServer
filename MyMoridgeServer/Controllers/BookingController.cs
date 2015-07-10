@@ -60,7 +60,7 @@ namespace MyMoridgeServer.Controllers
             }
             catch (Exception ex)
             {
-                Resource.LogError(ex);
+                Common.LogError(ex);
             }
         }
 

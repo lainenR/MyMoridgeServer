@@ -8,7 +8,7 @@ using MyMoridgeServer.Models;
 
 namespace MyMoridgeServer.BusinessLogic
 {
-    public class Resource
+    public class Common
     {
         public static string GetAppConfigValue(string key)
         {

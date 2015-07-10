@@ -49,7 +49,7 @@ namespace MyMoridgeServer.BusinessLogic
             ev.Description = bookingEvent.BookingMessage;
 
             GoogleCalendar calendar = new GoogleCalendar();
-            calendar.InsertEvent(ev, Resource.GetAppConfigValue("MoridgeDriverCalendarEmail"));
+            calendar.InsertEvent(ev, Common.GetAppConfigValue("MoridgeDriverCalendarEmail"));
 
             db.BookingLogs.Add(GetBookingLog(bookingEvent));
             db.SaveChanges();
@@ -58,18 +58,18 @@ namespace MyMoridgeServer.BusinessLogic
         public List<BookingEvent> Get15AvailableDatesForBooking()
         {
             GoogleCalendar googleCalendar = new GoogleCalendar();
-            var events = googleCalendar.GetEventList(Resource.GetAppConfigValue("MoridgeDriverCalendarEmail"));
+            var events = googleCalendar.GetEventList(Common.GetAppConfigValue("MoridgeDriverCalendarEmail"));
 
-            //googleCalendar.DeleteEvent(Resource.GetAppConfigValue("MoridgeDriverCalendarEmail"), "7dfntteacvfore0o5qdivp2g28");
+            //googleCalendar.DeleteEvent(Common.GetAppConfigValue("MoridgeDriverCalendarEmail"), "7dfntteacvfore0o5qdivp2g28");
 
             var daysBeforeBooking = 1;
             try
             {
-                daysBeforeBooking = Convert.ToInt32(Resource.GetAppConfigValue("DaysBeforeBooking"));
+                daysBeforeBooking = Convert.ToInt32(Common.GetAppConfigValue("DaysBeforeBooking"));
             }
             catch(Exception ex)
             {
-                Resource.LogError(ex);
+                Common.LogError(ex);
             }
 
             DateTime currentStartDate = DateTime.Now.AddDays(daysBeforeBooking).ToUniversalTime().AddHours(1); //Set swedish time
@@ -84,8 +84,8 @@ namespace MyMoridgeServer.BusinessLogic
 
             bool isMorningTime = true;
             int maxBookings = 0;
-            int maxBookingsBeforeLunch = Convert.ToInt32(Resource.GetAppConfigValue("MaxBookingsBeforeLunch"));
-            int maxBookingsAfterLunch = Convert.ToInt32(Resource.GetAppConfigValue("MaxBookingsAfterLunch"));
+            int maxBookingsBeforeLunch = Convert.ToInt32(Common.GetAppConfigValue("MaxBookingsBeforeLunch"));
+            int maxBookingsAfterLunch = Convert.ToInt32(Common.GetAppConfigValue("MaxBookingsAfterLunch"));
 
             while (dateList.Count < 15)
             {
@@ -181,7 +181,7 @@ namespace MyMoridgeServer.BusinessLogic
         {
             var attende = new EventAttendee();
 
-            attende.Email = Resource.GetAppConfigValue("MoridgeMainCalendarEmail");
+            attende.Email = Common.GetAppConfigValue("MoridgeMainCalendarEmail");
 
             return attende;
         }
@@ -190,7 +190,7 @@ namespace MyMoridgeServer.BusinessLogic
         {
             var attende = new EventAttendee();
 
-            attende.Email = Resource.GetAppConfigValue("MoridgeDriverCalendarEmail");
+            attende.Email = Common.GetAppConfigValue("MoridgeDriverCalendarEmail");
 
             return attende;
         }
@@ -218,7 +218,7 @@ namespace MyMoridgeServer.BusinessLogic
             Event.OrganizerData data = new Event.OrganizerData();
 
             data.DisplayName = "Moridge";
-            data.DisplayName = Resource.GetAppConfigValue("MoridgeDriverCalendarEmail");
+            data.DisplayName = Common.GetAppConfigValue("MoridgeDriverCalendarEmail");
 
             return data;
         }

@@ -181,7 +181,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BusinessLogic\Booking.cs" />
     <Compile Include="BusinessLogic\GoogleCalendar.cs" />
-    <Compile Include="BusinessLogic\Resource.cs" />
+    <Compile Include="BusinessLogic\Common.cs" />
     <Compile Include="Controllers\BookingController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
