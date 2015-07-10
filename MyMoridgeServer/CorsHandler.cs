@@ -10,7 +10,7 @@ using System.Net.Http;
 namespace MyMoridgeServer
 {
     public class CorsHandler : DelegatingHandler
-    {
+    { //test igen
         private const string Origin = "Origin";
         private const string AccessControlRequestMethod = "Access-Control-Request-Method";
         private const string AccessControlRequestHeaders = "Access-Control-Request-Headers";
