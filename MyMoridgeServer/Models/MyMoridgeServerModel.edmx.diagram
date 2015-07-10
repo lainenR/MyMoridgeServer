@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="3da784305e6b49deb9f2c6d8b4f5de18" Name="Diagram1" >
+        <EntityTypeShape EntityType="MyMoridgeServerModel.CustomerVehicle" Width="1.5" PointX="5.75" PointY="1.75" />
+        <EntityTypeShape EntityType="MyMoridgeServerModel.ErrorLog" Width="1.5" PointX="2.625" PointY="2.25" />
+        <EntityTypeShape EntityType="MyMoridgeServerModel.BookingLog" Width="1.5" PointX="7.625" PointY="2.375" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

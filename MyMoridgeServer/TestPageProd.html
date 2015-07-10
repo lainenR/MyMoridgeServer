@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          $.getJSON("http://moridge-001-site1.smarterasp.net/api/booking/",
+
+         function (Data) {
+             $.each(Data, function (key, val) {
+                 var str = val.StartDateTime.substring(0, 10) + ' ' + val.StartDateTime.substring(11, 16) + '  -  ' + val.EndDateTime.substring(0, 10) + ' ' + val.EndDateTime.substring(11, 16);
+
+                 $('<li/>', { text: str })
+                 .appendTo($('#dates'));
+             })
+             .success(function () { alert("second success"); })
+             .error(function (jqXHR, textStatus, errorThrown) {
+                 console.log("error " + textStatus);
+                 console.log("incoming Text " + jqXHR.responseText);
+             });
+         });
+
+          var customerId = 1;
+          $.getJSON("http://moridge-001-site1.smarterasp.net/api/vehicle/" + customerId,
+
+           function (Data) {
+               $.each(Data, function (key, val) {
+                   var str = val.CustomerOrgNo + ' ' + val.VehicleRegNo;
+
+                   $('<li/>', { text: str })
+                   .appendTo($('#vehicles'));
+               });
+
+           });
+
+          $.getJSON("http://moridge-001-site1.smarterasp.net/api/booking/" + customerId,
+
+           function (Data) {
+               $.each(Data, function (key, val) {
+                   var str = 'Organisationsnr: ' + val.CustomerOrgNo
+                       + ' Företagsnamn: ' + val.CompanyName
+                       + ' Startdatum: ' + val.StartDateTime
+                       + ' Färdigdatum: ' + val.EndDateTime
+                       + ' Kundemail: ' + val.CustomerEmail
+                       + ' Kundadress: ' + val.CustomerAddress
+                       + ' Reg.nr.: ' + val.VehicleRegNo
+                       + ' Meddelande: ' + val.BookingMessage;
+
+                   $('<li/>', { text: str })
+                   .appendTo($('#bookings'));
+               });
+           });
+      });
+
+        </script>
+    <script>
+        function BookEvent() {
+            var bookingEvent = {
+                'StartDateTime': $('#txtStart').val(),
+                'EndDateTime': $('#txtEnd').val(),
+                'CustomerOrgNo': $('#txtOrgNo').val(),
+                'CustomerEmail': $('#txtEmail').val(),
+                'CustomerAddress': $('#txtAddress').val(),
+                'VehicleRegNo': $('#txtRegNo').val(),
+                'IsBooked': 1,
+                'CompanyName': $('#txtCompanyName').val(),
+                'BookingMessage': $('#txtBookingMessage').val()
+            }
+
+            $.ajax({
+                type: "POST",
+                url: 'http://moridge-001-site1.smarterasp.net/api/booking',
+                dataType: "json",
+                data: bookingEvent
+            });
+        }
+
+    </script>
+ 
+ 
+<body id="body" >
+ 
+    <div class="main-content">
+ 
+        <div>
+ 
+            <h1>Lediga tider </h1>
+ 
+            <ul id="dates"/>
+ 
+        </div>
+
+        <div>
+ 
+            <h1>Fordon för specifik kund </h1>
+ 
+            <ul id="vehicles"/>
+ 
+        </div>
+
+        <div>
+ 
+            <h1>Bokningar för specifik kund</h1>
+ 
+            <ul id="bookings"/>
+ 
+        </div>
+ 
+        <div>
+ 
+             <h1>Bokning</h1>
+            Startdatum och tid
+            <input type="text" id="txtStart" size="30"/><br />
+            Slutdatum och tid
+            <input type="text" id="txtEnd" size="30"/><br />
+            Kund org. nummer
+            <input type="text" id="txtOrgNo" size="30"/><br />
+            Företagsnamn
+            <input type="text" id="txtCompanyName" size="30"/><br />
+            Kunds email
+            <input type="text" id="txtEmail" size="30"/><br />
+            Adress att hämta fordon
+            <input type="text" id="txtAddress" size="30"/><br />
+            Reg. nummer på fordon
+            <input type="text" id="txtRegNo" size="30"/><br />
+            Bokningsmeddelande
+            <input type="text" id="txtBookingMessage" size="30"/><br />
+
+            <input type="button" value="Boka" onclick="BookEvent();" />
+ 
+ 
+            <p id="item" />
+ 
+        </div>
+ 
+    </div>
+ 
+</body> 
+</html>
+
+

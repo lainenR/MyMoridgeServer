@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="MyMoridgeServerModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+  <EntityContainer Name="MyMoridgeServerModelStoreContainer">
+    <EntitySet Name="CustomerVehicles" EntityType="MyMoridgeServerModel.Store.CustomerVehicles" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="ErrorLogSet" EntityType="MyMoridgeServerModel.Store.ErrorLogSet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="BookingLogs" EntityType="MyMoridgeServerModel.Store.BookingLogs" store:Type="Tables" Schema="dbo" />
+  </EntityContainer>
+  <EntityType Name="CustomerVehicles">
+    <Key>
+      <PropertyRef Name="CustomerOrgNo" />
+      <PropertyRef Name="VehicleRegNo" />
+    </Key>
+    <Property Name="CustomerOrgNo" Type="nvarchar" Nullable="false" MaxLength="30" />
+    <Property Name="VehicleRegNo" Type="nvarchar" Nullable="false" MaxLength="10" />
+  </EntityType>
+  <EntityType Name="ErrorLogSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ErrorMessage" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="DatetTimeStamp" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="BookingLogs">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="StartDateTime" Type="datetime" Nullable="false" />
+    <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+    <Property Name="CustomerOrgNo" Type="nvarchar" Nullable="false" MaxLength="100" />
+    <Property Name="CustomerEmail" Type="nvarchar" Nullable="false" MaxLength="100" />
+    <Property Name="CustomerAddress" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="VehicleRegNo" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="CompanyName" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="BookingMessage" Type="nvarchar(max)" Nullable="true" />
+  </EntityType>
+</Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="MyMoridgeServerModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" >
+        <EntityContainer Name="MyMoridgeServerModelContainer1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="CustomerVehicles" EntityType="MyMoridgeServerModel.CustomerVehicle" />
+          <EntitySet Name="ErrorLogSet" EntityType="MyMoridgeServerModel.ErrorLog" />
+          <EntitySet Name="BookingLogs" EntityType="MyMoridgeServerModel.BookingLog" />
+        </EntityContainer>
+        <EntityType Name="CustomerVehicle">
+          <Key>
+            <PropertyRef Name="CustomerOrgNo" />
+            <PropertyRef Name="VehicleRegNo" />
+          </Key>
+          <Property Type="String" Name="CustomerOrgNo" Nullable="false" annotation:StoreGeneratedPattern="None" MaxLength="30" Unicode="true" FixedLength="false" />
+          <Property Type="String" Name="VehicleRegNo" Nullable="false" MaxLength="10" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="ErrorLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="ErrorMessage" Nullable="false" MaxLength="Max" />
+          <Property Type="DateTime" Name="DatetTimeStamp" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BookingLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="DateTime" Name="StartDateTime" Nullable="false" />
+          <Property Type="DateTime" Name="EndDateTime" Nullable="false" />
+          <Property Type="String" Name="CustomerOrgNo" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="CustomerEmail" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="CustomerAddress" Nullable="false" MaxLength="Max" />
+          <Property Type="String" Name="VehicleRegNo" Nullable="false" MaxLength="10" />
+          <Property Type="String" Name="CompanyName" Nullable="true" MaxLength="Max" />
+          <Property Type="String" Name="BookingMessage" Nullable="true" MaxLength="Max" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="MyMoridgeServerModelStoreContainer" CdmEntityContainer="MyMoridgeServerModelContainer1">
+    <EntitySetMapping Name="CustomerVehicles">
+      <EntityTypeMapping TypeName="IsTypeOf(MyMoridgeServerModel.CustomerVehicle)">
+        <MappingFragment StoreEntitySet="CustomerVehicles">
+          <ScalarProperty Name="CustomerOrgNo" ColumnName="CustomerOrgNo" />
+          <ScalarProperty Name="VehicleRegNo" ColumnName="VehicleRegNo" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ErrorLogSet">
+      <EntityTypeMapping TypeName="IsTypeOf(MyMoridgeServerModel.ErrorLog)">
+        <MappingFragment StoreEntitySet="ErrorLogSet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="ErrorMessage" ColumnName="ErrorMessage" />
+          <ScalarProperty Name="DatetTimeStamp" ColumnName="DatetTimeStamp" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="BookingLogs">
+      <EntityTypeMapping TypeName="IsTypeOf(MyMoridgeServerModel.BookingLog)">
+        <MappingFragment StoreEntitySet="BookingLogs">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="StartDateTime" ColumnName="StartDateTime" />
+          <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+          <ScalarProperty Name="CustomerOrgNo" ColumnName="CustomerOrgNo" />
+          <ScalarProperty Name="CustomerEmail" ColumnName="CustomerEmail" />
+          <ScalarProperty Name="CustomerAddress" ColumnName="CustomerAddress" />
+          <ScalarProperty Name="VehicleRegNo" ColumnName="VehicleRegNo" />
+          <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+          <ScalarProperty Name="BookingMessage" ColumnName="BookingMessage" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <edmx:Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
