@@ -21,12 +21,18 @@ namespace MyMoridgeServer.BusinessLogic
 {
     public class GoogleCalendar
     {        
-
         private CalendarService GoogleService { get; set; }
+        
 
-        public GoogleCalendar()
+        private string CalendarServiceAccountEmail { get; set;}
+        private string CalendarEmail { get; set; }
+        private string FileNameP12 { get; set; }
+
+        public GoogleCalendar(string calendarEmail, string calendarServiceAccountEmail)
         {
-
+            CalendarServiceAccountEmail = calendarServiceAccountEmail;
+            CalendarEmail = calendarEmail;
+            FileNameP12 = GetFileNameP12(calendarEmail);
         }
 
         public CalendarList GetCalendarList()
@@ -43,13 +49,13 @@ namespace MyMoridgeServer.BusinessLogic
             }
         }
 
-        public Events GetEventList(string calendarId)
+        public Events GetEventList()
         {
             try
             {
                 CreateGoogleService();
 
-                return GoogleService.Events.List(calendarId).Execute();
+                return GoogleService.Events.List(CalendarEmail) .Execute();
             }
             catch (Exception e)
             {
@@ -57,13 +63,13 @@ namespace MyMoridgeServer.BusinessLogic
             }
         }
 
-        public void InsertEvent(Event ev, string calendarId)
+        public void InsertEvent(Event ev)
         {
             try
             {
                 CreateGoogleService();
 
-                var insertRequest = new EventsResource.InsertRequest(GoogleService, ev, calendarId);
+                var insertRequest = new EventsResource.InsertRequest(GoogleService, ev, CalendarEmail);
 
                 insertRequest.SendNotifications = true;
 
@@ -75,11 +81,11 @@ namespace MyMoridgeServer.BusinessLogic
             }
         }
 
-        public void DeleteEvent(string calendarId, string eventId)
+        public void DeleteEvent(string eventId)
         {
             CreateGoogleService();
 
-            GoogleService.Events.Delete(calendarId, eventId).Execute();
+            GoogleService.Events.Delete(CalendarEmail, eventId).Execute();
         }
 
         //Service account
@@ -87,8 +93,8 @@ namespace MyMoridgeServer.BusinessLogic
         {
             try
             {
-                string serviceAccountEmail = Common.GetAppConfigValue("MoridgeMainCalendarEmail");
-                string keyFile = AppDomain.CurrentDomain.BaseDirectory + "key.p12";
+                string serviceAccountEmail = CalendarServiceAccountEmail;
+                string keyFile = AppDomain.CurrentDomain.BaseDirectory + FileNameP12;
                 var certificate = new X509Certificate2(keyFile, "notasecret", X509KeyStorageFlags.Exportable);
 
                 // Create credentials
@@ -109,6 +115,30 @@ namespace MyMoridgeServer.BusinessLogic
             {
                 throw new Exception("Error creating Google service!", ex);
             }
+        }
+
+        private string GetFileNameP12(string email)
+        {
+            int index = 0;
+            string fileName = "";
+
+            try
+            {
+                index = email.IndexOf("@");
+
+                if (index == 0)
+                {
+                    throw new Exception("Calendar email error, check email address");
+
+                }
+                fileName = email.Substring(0, index) + ".p12";
+            }
+            catch(Exception ex)
+            {
+                Common.LogError(ex);
+            }
+
+            return fileName;
         }
 
         /* Client account

@@ -2,8 +2,8 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, and Azure
 -- --------------------------------------------------
--- Date Created: 12/31/2014 11:29:44
--- Generated from EDMX file: C:\Users\krevay\documents\visual studio 2012\Projects\MyMoridgeServer\MyMoridgeServer\Models\MyMoridgeServerModel.edmx
+-- Date Created: 07/14/2015 09:39:24
+-- Generated from EDMX file: C:\Users\krevay\Documents\Visual Studio 2012\Projects\MyMoridgeServer\MyMoridgeServer\Models\MyMoridgeServerModel.edmx
 -- --------------------------------------------------
 
 SET QUOTED_IDENTIFIER OFF;
@@ -61,7 +61,21 @@ CREATE TABLE [dbo].[BookingLogs] (
     [CustomerAddress] nvarchar(max)  NOT NULL,
     [VehicleRegNo] nvarchar(10)  NOT NULL,
     [CompanyName] nvarchar(max)  NULL,
-    [BookingMessage] nvarchar(max)  NULL
+    [BookingMessage] nvarchar(max)  NULL,
+    [ResourceId] int  NOT NULL
+);
+GO
+
+-- Creating table 'Resources'
+CREATE TABLE [dbo].[Resources] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [Name] nvarchar(100)  NOT NULL,
+    [CalendarEmail] nvarchar(100)  NOT NULL,
+    [CalendarServiceAccountEmail] nvarchar(200)  NOT NULL,
+    [MaxBookingsBeforeLunch] int  NOT NULL,
+    [MaxBookingsAfterLunch] int  NOT NULL,
+    [DaysBeforeBooking] int  NOT NULL,
+    [BookingPriority] int  NOT NULL
 );
 GO
 
@@ -87,9 +101,29 @@ ADD CONSTRAINT [PK_BookingLogs]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 
+-- Creating primary key on [Id] in table 'Resources'
+ALTER TABLE [dbo].[Resources]
+ADD CONSTRAINT [PK_Resources]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
 -- --------------------------------------------------
 -- Creating all FOREIGN KEY constraints
 -- --------------------------------------------------
+
+-- Creating foreign key on [ResourceId] in table 'BookingLogs'
+ALTER TABLE [dbo].[BookingLogs]
+ADD CONSTRAINT [FK_BookingLogResource]
+    FOREIGN KEY ([ResourceId])
+    REFERENCES [dbo].[Resources]
+        ([Id])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_BookingLogResource'
+CREATE INDEX [IX_FK_BookingLogResource]
+ON [dbo].[BookingLogs]
+    ([ResourceId]);
+GO
 
 -- --------------------------------------------------
 -- Script has ended

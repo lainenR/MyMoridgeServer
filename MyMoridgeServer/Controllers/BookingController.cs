@@ -49,6 +49,7 @@ namespace MyMoridgeServer.Controllers
                     bookingEvent.IsBooked = true;
                     bookingEvent.CompanyName = bookingEventDTO.CompanyName;
                     bookingEvent.BookingMessage = bookingEventDTO.BookingMessage;
+                    bookingEvent.ResourceId = bookingEventDTO.ResourceId;
 
                     Booking booking = new Booking();
                     booking.BookEvent(bookingEvent);

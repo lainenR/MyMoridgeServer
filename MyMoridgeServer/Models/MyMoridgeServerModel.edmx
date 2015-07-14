@@ -9,6 +9,11 @@
     <EntitySet Name="CustomerVehicles" EntityType="MyMoridgeServerModel.Store.CustomerVehicles" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="ErrorLogSet" EntityType="MyMoridgeServerModel.Store.ErrorLogSet" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="BookingLogs" EntityType="MyMoridgeServerModel.Store.BookingLogs" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Resources" EntityType="MyMoridgeServerModel.Store.Resources" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="BookingLogResource" Association="MyMoridgeServerModel.Store.BookingLogResource">
+      <End Role="BookingLog" EntitySet="BookingLogs" />
+      <End Role="Resource" EntitySet="Resources" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="CustomerVehicles">
     <Key>
@@ -39,7 +44,33 @@
     <Property Name="VehicleRegNo" Type="nvarchar" Nullable="false" MaxLength="10" />
     <Property Name="CompanyName" Type="nvarchar(max)" Nullable="true" />
     <Property Name="BookingMessage" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="ResourceId" Type="int" Nullable="false" />
   </EntityType>
+  <EntityType Name="Resources">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="100" />
+    <Property Name="CalendarEmail" Type="nvarchar" Nullable="false" MaxLength="100" />
+    <Property Name="CalendarServiceAccountEmail" Type="nvarchar" Nullable="false" MaxLength="200" />
+    <Property Name="MaxBookingsBeforeLunch" Type="int" Nullable="false" />
+    <Property Name="MaxBookingsAfterLunch" Type="int" Nullable="false" />
+    <Property Name="DaysBeforeBooking" Type="int" Nullable="false" />
+    <Property Name="BookingPriority" Type="int" Nullable="false" />
+  </EntityType>
+  <Association Name="BookingLogResource">
+    <End Role="BookingLog" Type="MyMoridgeServerModel.Store.BookingLogs" Multiplicity="*" />
+    <End Role="Resource" Type="MyMoridgeServerModel.Store.Resources" Multiplicity="1" />
+    <ReferentialConstraint>
+      <Principal Role="Resource">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="BookingLog">
+        <PropertyRef Name="ResourceId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -48,6 +79,11 @@
           <EntitySet Name="CustomerVehicles" EntityType="MyMoridgeServerModel.CustomerVehicle" />
           <EntitySet Name="ErrorLogSet" EntityType="MyMoridgeServerModel.ErrorLog" />
           <EntitySet Name="BookingLogs" EntityType="MyMoridgeServerModel.BookingLog" />
+          <EntitySet Name="Resources" EntityType="MyMoridgeServerModel.Resource" />
+          <AssociationSet Name="BookingLogResource" Association="MyMoridgeServerModel.BookingLogResource">
+            <End Role="BookingLog" EntitySet="BookingLogs" />
+            <End Role="Resource" EntitySet="Resources" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="CustomerVehicle">
           <Key>
@@ -78,7 +114,35 @@
           <Property Type="String" Name="VehicleRegNo" Nullable="false" MaxLength="10" />
           <Property Type="String" Name="CompanyName" Nullable="true" MaxLength="Max" />
           <Property Type="String" Name="BookingMessage" Nullable="true" MaxLength="Max" />
+          <NavigationProperty Name="Resource" Relationship="MyMoridgeServerModel.BookingLogResource" FromRole="BookingLog" ToRole="Resource" />
+          <Property Type="Int32" Name="ResourceId" Nullable="false" />
         </EntityType>
+        <EntityType Name="Resource">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="CalendarEmail" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="CalendarServiceAccountEmail" Nullable="false" Unicode="true" MaxLength="200" />
+          <Property Type="Int32" Name="MaxBookingsBeforeLunch" Nullable="false" />
+          <Property Type="Int32" Name="MaxBookingsAfterLunch" Nullable="false" />
+          <Property Type="Int32" Name="DaysBeforeBooking" Nullable="false" />
+          <Property Type="Int32" Name="BookingPriority" Nullable="false" />
+          <NavigationProperty Name="BookingLog" Relationship="MyMoridgeServerModel.BookingLogResource" FromRole="Resource" ToRole="BookingLog" />
+        </EntityType>
+        <Association Name="BookingLogResource">
+          <End Type="MyMoridgeServerModel.BookingLog" Role="BookingLog" Multiplicity="*" />
+          <End Type="MyMoridgeServerModel.Resource" Role="Resource" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="Resource">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BookingLog">
+              <PropertyRef Name="ResourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -114,6 +178,21 @@
           <ScalarProperty Name="VehicleRegNo" ColumnName="VehicleRegNo" />
           <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
           <ScalarProperty Name="BookingMessage" ColumnName="BookingMessage" />
+          <ScalarProperty Name="ResourceId" ColumnName="ResourceId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Resources">
+      <EntityTypeMapping TypeName="IsTypeOf(MyMoridgeServerModel.Resource)">
+        <MappingFragment StoreEntitySet="Resources">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="CalendarEmail" ColumnName="CalendarEmail" />
+          <ScalarProperty Name="CalendarServiceAccountEmail" ColumnName="CalendarServiceAccountEmail" />
+          <ScalarProperty Name="MaxBookingsBeforeLunch" ColumnName="MaxBookingsBeforeLunch" />
+          <ScalarProperty Name="MaxBookingsAfterLunch" ColumnName="MaxBookingsAfterLunch" />
+          <ScalarProperty Name="DaysBeforeBooking" ColumnName="DaysBeforeBooking" />
+          <ScalarProperty Name="BookingPriority" ColumnName="BookingPriority" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

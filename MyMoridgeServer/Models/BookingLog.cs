@@ -23,5 +23,8 @@ namespace MyMoridgeServer.Models
         public string VehicleRegNo { get; set; }
         public string CompanyName { get; set; }
         public string BookingMessage { get; set; }
+        public int ResourceId { get; set; }
+    
+        public virtual Resource Resource { get; set; }
     }
 }

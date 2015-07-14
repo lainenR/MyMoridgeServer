@@ -19,6 +19,8 @@ namespace MyMoridgeServer.BusinessLogic
 
         public void BookEvent(BookingEvent bookingEvent)
         {
+            Resource resource = db.Resources.Find(bookingEvent.ResourceId);
+
             if(bookingEvent.StartDateTime.CompareTo(DateTime.UtcNow.AddYears(-1)) < 0 ||
                         bookingEvent.EndDateTime.CompareTo(DateTime.UtcNow.AddYears(-1)) < 0)
             {
@@ -37,19 +39,19 @@ namespace MyMoridgeServer.BusinessLogic
                 db.SaveChanges();
             }
 
-            var ev = GetGoogleEvent(bookingEvent);
+            var ev = GoogleCalendarHelper.GetGoogleEvent(bookingEvent);
             ev.Attendees = new List<EventAttendee>();
-            ev.Attendees.Add(GetUserAttende(bookingEvent.CustomerEmail));
-            ev.Attendees.Add(GetMoridgeDriverCalendarAttende());
-            ev.Organizer = GetEventOrganizer();
+            ev.Attendees.Add(GoogleCalendarHelper.GetUserAttende(bookingEvent.CustomerEmail));
+            ev.Attendees.Add(GoogleCalendarHelper.GetMoridgeDriverCalendarAttende(resource.CalendarEmail));
+            ev.Organizer = GoogleCalendarHelper.GetEventOrganizer();
 
-            ev.Start = GetEventStart(bookingEvent.StartDateTime.AddHours(8));
-            ev.End = GetEventEnd(bookingEvent.EndDateTime.AddHours(8));
+            ev.Start = GoogleCalendarHelper.GetEventStart(bookingEvent.StartDateTime.AddHours(8));
+            ev.End = GoogleCalendarHelper.GetEventEnd(bookingEvent.EndDateTime.AddHours(8));
             ev.Location = bookingEvent.CustomerAddress;
             ev.Description = bookingEvent.BookingMessage;
 
-            GoogleCalendar calendar = new GoogleCalendar();
-            calendar.InsertEvent(ev, Common.GetAppConfigValue("MoridgeDriverCalendarEmail"));
+            GoogleCalendar calendar = new GoogleCalendar(Common.GetAppConfigValue("MoridgeOrganizerCalendarEmail"), Common.GetAppConfigValue("MoridgeMainCalendarEmail"));
+            calendar.InsertEvent(ev);
 
             db.BookingLogs.Add(GetBookingLog(bookingEvent));
             db.SaveChanges();
@@ -57,76 +59,9 @@ namespace MyMoridgeServer.BusinessLogic
 
         public List<BookingEvent> Get15AvailableDatesForBooking()
         {
-            GoogleCalendar googleCalendar = new GoogleCalendar();
-            var events = googleCalendar.GetEventList(Common.GetAppConfigValue("MoridgeDriverCalendarEmail"));
+            Resources resources = new Resources();
 
-            //googleCalendar.DeleteEvent(Common.GetAppConfigValue("MoridgeDriverCalendarEmail"), "7dfntteacvfore0o5qdivp2g28");
-
-            var daysBeforeBooking = 1;
-            try
-            {
-                daysBeforeBooking = Convert.ToInt32(Common.GetAppConfigValue("DaysBeforeBooking"));
-            }
-            catch(Exception ex)
-            {
-                Common.LogError(ex);
-            }
-
-            DateTime currentStartDate = DateTime.Now.AddDays(daysBeforeBooking).ToUniversalTime().AddHours(1); //Set swedish time
-            DateTime currentEndDate = currentStartDate;
-            
-            TimeSpan morningStartTime = new TimeSpan(8, 0, 0);
-            TimeSpan morningEndTime = new TimeSpan(12, 0, 0);
-            TimeSpan afterLunchStartTime = new TimeSpan(13, 0, 0);
-            TimeSpan afterLunchEndTime = new TimeSpan(17, 0, 0);
-
-            List<BookingEvent> dateList = new List<BookingEvent>();
-
-            bool isMorningTime = true;
-            int maxBookings = 0;
-            int maxBookingsBeforeLunch = Convert.ToInt32(Common.GetAppConfigValue("MaxBookingsBeforeLunch"));
-            int maxBookingsAfterLunch = Convert.ToInt32(Common.GetAppConfigValue("MaxBookingsAfterLunch"));
-
-            while (dateList.Count < 15)
-            {
-                if (currentStartDate.DayOfWeek != DayOfWeek.Saturday && currentStartDate.DayOfWeek != DayOfWeek.Sunday)
-                {
-                    if (isMorningTime)
-                    {
-                        currentStartDate = currentStartDate.Date + morningStartTime;
-                        currentEndDate = currentEndDate.Date + morningEndTime;
-                        maxBookings = maxBookingsBeforeLunch;
-                        isMorningTime = false;
-                    }
-                    else
-                    {
-                        currentStartDate = currentStartDate.Date + afterLunchStartTime;
-                        currentEndDate = currentEndDate.Date + afterLunchEndTime;
-                        maxBookings = maxBookingsAfterLunch;
-                        isMorningTime = true;
-                    }              
-
-                    if (events.Items.Count(date => (DateTime)date.Start.DateTime >= currentStartDate &&
-                                            (DateTime)date.End.DateTime <= currentEndDate) < maxBookings)
-                    {
-                        BookingEvent bookingEvent = new BookingEvent();
-
-                        bookingEvent.IsBooked = false;
-                        bookingEvent.StartDateTime = currentStartDate;
-                        bookingEvent.EndDateTime = currentEndDate;
-
-                        dateList.Add(bookingEvent);
-                    }
-                }
-
-                if (isMorningTime)
-                {
-                    currentStartDate = currentStartDate.AddDays(1);
-                    currentEndDate = currentEndDate.AddDays(1);
-                }
-            }
-
-            return dateList;
+            return resources.Get15AvailableDatesForBooking();
         }
 
         public List<BookingEvent> GetBookingsByOrganisation(string customerOrgNo)
@@ -155,74 +90,6 @@ namespace MyMoridgeServer.BusinessLogic
             return events;
         }
 
-
-        private Event GetGoogleEvent(BookingEvent ev)
-        {
-            var googleEvent = new Event();
-            StringBuilder sb = new StringBuilder();
-            
-            sb.Append("Moridge - ").Append(ev.CompanyName).Append(" ").Append(ev.VehicleRegNo);
-            googleEvent.Summary = sb.ToString();
-            googleEvent.Description = ev.BookingMessage;
-            
-            return googleEvent;
-        }
-
-        private EventAttendee GetUserAttende(string email)
-        {
-            
-            var attende = new EventAttendee();
-            attende.Email = email;
-
-            return attende;
-        }
-
-        private EventAttendee GetMainMoridgeCalendarAttende()
-        {
-            var attende = new EventAttendee();
-
-            attende.Email = Common.GetAppConfigValue("MoridgeMainCalendarEmail");
-
-            return attende;
-        }
-
-        private EventAttendee GetMoridgeDriverCalendarAttende()
-        {
-            var attende = new EventAttendee();
-
-            attende.Email = Common.GetAppConfigValue("MoridgeDriverCalendarEmail");
-
-            return attende;
-        }
-
-        private EventDateTime GetEventStart(DateTime start)
-        {
-            var eventDateTime = new EventDateTime();
-
-            eventDateTime.DateTimeRaw = start.ToString("yyyy-MM-dd") + "T" + start.TimeOfDay.ToString() + "+01:00";
-
-            return eventDateTime;
-        }
-
-        private EventDateTime GetEventEnd(DateTime end)
-        {
-            var eventDateTime = new EventDateTime();
-
-            eventDateTime.DateTimeRaw = end.Date.ToString("yyyy-MM-dd") + "T" + end.TimeOfDay.ToString() + "+01:00";
-
-            return eventDateTime;
-        }
-
-        private Event.OrganizerData GetEventOrganizer()
-        {
-            Event.OrganizerData data = new Event.OrganizerData();
-
-            data.DisplayName = "Moridge";
-            data.DisplayName = Common.GetAppConfigValue("MoridgeDriverCalendarEmail");
-
-            return data;
-        }
-
         private BookingLog GetBookingLog(BookingEvent ev)
         {
             BookingLog log = new BookingLog();
@@ -235,6 +102,7 @@ namespace MyMoridgeServer.BusinessLogic
             log.CustomerOrgNo = ev.CustomerOrgNo;
             log.BookingMessage = ev.BookingMessage;
             log.CompanyName = ev.CompanyName;
+            log.ResourceId = ev.ResourceId;
 
             return log;
         }

@@ -16,5 +16,6 @@ namespace MyMoridgeServer.Models
         public bool IsBooked { get; set; }
         public string CompanyName { get; set; }
         public string BookingMessage { get; set; }
+        public int ResourceId { get; set; }
     }
 }

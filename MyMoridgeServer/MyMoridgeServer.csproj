@@ -175,6 +175,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="BusinessLogic\GoogleCalendarHelper.cs" />
+    <Compile Include="BusinessLogic\Resources.cs" />
     <Compile Include="CorsHandler.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -186,16 +188,16 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Controllers\VehicleController.cs" />
+    <Compile Include="Models\BookingEvent.cs" />
+    <Compile Include="Models\BookingEventDTO.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
     <Compile Include="Models\BookingLog.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\CustomerVehicle.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\BookingEvent.cs" />
-    <Compile Include="Models\BookingEventDTO.cs" />
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ErrorLog.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
@@ -214,6 +216,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MyMoridgeServerModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Resource.cs">
+      <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
