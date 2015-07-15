@@ -88,19 +88,24 @@ namespace MyMoridgeServer.BusinessLogic
                         isMorningTime = true;
                     }
 
-                    /*if (events.Items.Count(date => (DateTime)date.Start.DateTime >= currentStartDate &&
-                                            (DateTime)date.End.DateTime <= currentEndDate) < maxBookings)*/
+                    //Check if not all slots are booked
                     if (events.Items.Count(date => (DateTime)date.End.DateTime > currentStartDate &&
                                             (DateTime)date.End.DateTime <= currentEndDate) < maxBookings)
                     {
-                        BookingEvent bookingEvent = new BookingEvent();
+                        //Check if resource is working
+                        if (events.Items.Count(free => (DateTime)free.End.DateTime > currentStartDate &&
+                        (DateTime)free.End.DateTime <= currentEndDate &&
+                        free.Summary.ToLower().StartsWith("ledig")) == 0)
+                        {
+                            BookingEvent bookingEvent = new BookingEvent();
 
-                        bookingEvent.IsBooked = false;
-                        bookingEvent.StartDateTime = currentStartDate;
-                        bookingEvent.EndDateTime = currentEndDate;
-                        bookingEvent.ResourceId = resource.Id;
+                            bookingEvent.IsBooked = false;
+                            bookingEvent.StartDateTime = currentStartDate;
+                            bookingEvent.EndDateTime = currentEndDate;
+                            bookingEvent.ResourceId = resource.Id;
 
-                        dateList.Add(bookingEvent);
+                            dateList.Add(bookingEvent);
+                        }
                     }
                 }
 

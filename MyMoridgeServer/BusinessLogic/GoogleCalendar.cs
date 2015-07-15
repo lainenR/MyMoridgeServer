@@ -40,7 +40,7 @@ namespace MyMoridgeServer.BusinessLogic
             try
             {
                 CreateGoogleService();
-                
+
                 return GoogleService.CalendarList.List().Execute();
             }
             catch (Exception e)
@@ -55,7 +55,10 @@ namespace MyMoridgeServer.BusinessLogic
             {
                 CreateGoogleService();
 
-                return GoogleService.Events.List(CalendarEmail) .Execute();
+                GoogleService.Events.List(CalendarEmail).TimeMin = DateTime.Now;
+                GoogleService.Events.List(CalendarEmail).TimeMax = DateTime.Now.AddMonths(2);
+
+                return GoogleService.Events.List(CalendarEmail).Execute();
             }
             catch (Exception e)
             {
