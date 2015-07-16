@@ -45,6 +45,8 @@
     <Property Name="CompanyName" Type="nvarchar(max)" Nullable="true" />
     <Property Name="BookingMessage" Type="nvarchar(max)" Nullable="true" />
     <Property Name="ResourceId" Type="int" Nullable="false" />
+    <Property Name="SupplierEmailAddress" Type="nvarchar" Nullable="false" MaxLength="100" />
+    <Property Name="BookingHeader" Type="nvarchar(max)" Nullable="false" />
   </EntityType>
   <EntityType Name="Resources">
     <Key>
@@ -116,6 +118,8 @@
           <Property Type="String" Name="BookingMessage" Nullable="true" MaxLength="Max" />
           <NavigationProperty Name="Resource" Relationship="MyMoridgeServerModel.BookingLogResource" FromRole="BookingLog" ToRole="Resource" />
           <Property Type="Int32" Name="ResourceId" Nullable="false" />
+          <Property Type="String" Name="SupplierEmailAddress" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="BookingHeader" Nullable="false" MaxLength="Max" />
         </EntityType>
         <EntityType Name="Resource">
           <Key>
@@ -179,6 +183,8 @@
           <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
           <ScalarProperty Name="BookingMessage" ColumnName="BookingMessage" />
           <ScalarProperty Name="ResourceId" ColumnName="ResourceId" />
+          <ScalarProperty Name="SupplierEmailAddress" ColumnName="SupplierEmailAddress" />
+          <ScalarProperty Name="BookingHeader" ColumnName="BookingHeader" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

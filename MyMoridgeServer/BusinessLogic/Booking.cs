@@ -21,6 +21,11 @@ namespace MyMoridgeServer.BusinessLogic
         {
             Resource resource = db.Resources.Find(bookingEvent.ResourceId);
 
+            if (resource == null)
+            {
+                throw new Exception("Error trying to find resource with id: " + bookingEvent.ResourceId.ToString());
+            }
+
             if(bookingEvent.StartDateTime.CompareTo(DateTime.UtcNow.AddYears(-1)) < 0 ||
                         bookingEvent.EndDateTime.CompareTo(DateTime.UtcNow.AddYears(-1)) < 0)
             {
@@ -28,6 +33,7 @@ namespace MyMoridgeServer.BusinessLogic
                     " : " + bookingEvent.EndDateTime.ToString());
             }
 
+            //If customer and vehicle doesn´t exist, add
             if(db.CustomerVehicles.Count(v => 
                 v.CustomerOrgNo == bookingEvent.CustomerOrgNo &&
                 v.VehicleRegNo == bookingEvent.VehicleRegNo) == 0)
@@ -43,13 +49,12 @@ namespace MyMoridgeServer.BusinessLogic
             ev.Attendees = new List<EventAttendee>();
             ev.Attendees.Add(GoogleCalendarHelper.GetUserAttende(bookingEvent.CustomerEmail));
             ev.Attendees.Add(GoogleCalendarHelper.GetMoridgeDriverCalendarAttende(resource.CalendarEmail));
+            ev.Attendees.Add(GoogleCalendarHelper.GetMoridgeDriverCalendarAttende(bookingEvent.SupplierEmailAddress));
             ev.Organizer = GoogleCalendarHelper.GetEventOrganizer();
 
-            ev.Start = GoogleCalendarHelper.GetEventStart(bookingEvent.StartDateTime.AddHours(8));
-            ev.End = GoogleCalendarHelper.GetEventEnd(bookingEvent.EndDateTime.AddHours(8));
-            ev.Location = bookingEvent.CustomerAddress;
-            ev.Description = bookingEvent.BookingMessage;
-
+            ev.Start = GoogleCalendarHelper.GetEventStart(bookingEvent.StartDateTime.AddHours(8)); //Compensate for timedifference between client- and serviceserver
+            ev.End = GoogleCalendarHelper.GetEventEnd(bookingEvent.EndDateTime.AddHours(8)); //Compensate for timedifference between client- and serviceserver
+           
             GoogleCalendar calendar = new GoogleCalendar(Common.GetAppConfigValue("MoridgeOrganizerCalendarEmail"), Common.GetAppConfigValue("MoridgeMainCalendarEmail"));
             calendar.InsertEvent(ev);
 
@@ -81,7 +86,9 @@ namespace MyMoridgeServer.BusinessLogic
                 ev.CustomerEmail = item.CustomerEmail;
                 ev.CustomerOrgNo = item.CustomerOrgNo;
                 ev.IsBooked = true;
+                ev.BookingHeader = item.BookingHeader;
                 ev.BookingMessage = item.BookingMessage;
+                ev.SupplierEmailAddress = item.SupplierEmailAddress;
                 ev.CompanyName = item.CompanyName;
 
                 events.Add(ev);
@@ -103,6 +110,8 @@ namespace MyMoridgeServer.BusinessLogic
             log.BookingMessage = ev.BookingMessage;
             log.CompanyName = ev.CompanyName;
             log.ResourceId = ev.ResourceId;
+            log.BookingHeader = ev.BookingHeader;
+            log.SupplierEmailAddress = ev.SupplierEmailAddress;
 
             return log;
         }

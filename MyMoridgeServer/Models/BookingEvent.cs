@@ -9,13 +9,15 @@ namespace MyMoridgeServer.Models
     {
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
+        public string CompanyName { get; set; }
         public string CustomerOrgNo { get; set; }
         public string CustomerEmail { get; set; } 
         public string CustomerAddress { get; set; }
         public string VehicleRegNo { get; set; }
-        public bool IsBooked { get; set; }
-        public string CompanyName { get; set; }
+        public string BookingHeader { get; set; }
         public string BookingMessage { get; set; }
+        public bool IsBooked { get; set; }
         public int ResourceId { get; set; }
+        public string SupplierEmailAddress { get; set; }
     }
 }

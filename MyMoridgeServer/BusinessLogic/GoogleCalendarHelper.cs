@@ -13,11 +13,17 @@ namespace MyMoridgeServer.BusinessLogic
         public static Event GetGoogleEvent(BookingEvent ev)
         {
             var googleEvent = new Event();
-            StringBuilder sb = new StringBuilder();
+            StringBuilder header = new StringBuilder(ev.BookingHeader);
 
-            sb.Append("Moridge - ").Append(ev.CompanyName).Append(" ").Append(ev.VehicleRegNo);
-            googleEvent.Summary = sb.ToString();
+            if (header.Length == 0)
+            {
+                header.Append("Moridge - ").Append(ev.CompanyName).Append(" ").Append(ev.VehicleRegNo);
+                ev.BookingHeader = header.ToString();
+            }
+
+            googleEvent.Summary = header.ToString();
             googleEvent.Description = ev.BookingMessage;
+            googleEvent.Location = ev.CustomerAddress;
 
             return googleEvent;
         }

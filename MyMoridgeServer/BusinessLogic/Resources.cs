@@ -89,10 +89,12 @@ namespace MyMoridgeServer.BusinessLogic
                     }
 
                     //Check if not all slots are booked
-                    if (events.Items.Count(date => (DateTime)date.End.DateTime > currentStartDate &&
-                                            (DateTime)date.End.DateTime <= currentEndDate) < maxBookings)
+                    if (events.Items.Count(date => ((DateTime)date.Start.DateTime >= currentStartDate &&
+                                            (DateTime)date.Start.DateTime < currentEndDate) ||
+                                            ((DateTime)date.End.DateTime > currentStartDate &&
+                                            (DateTime)date.End.DateTime <= currentEndDate)) < maxBookings)
                     {
-                        //Check if resource is working
+                        //Check if resource is working 
                         if (events.Items.Count(free => (DateTime)free.End.DateTime > currentStartDate &&
                         (DateTime)free.End.DateTime <= currentEndDate &&
                         free.Summary.ToLower().StartsWith("ledig")) == 0)

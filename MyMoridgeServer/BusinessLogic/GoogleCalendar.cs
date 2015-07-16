@@ -102,10 +102,10 @@ namespace MyMoridgeServer.BusinessLogic
 
                 // Create credentials
                 ServiceAccountCredential credential = new ServiceAccountCredential(
-                   new ServiceAccountCredential.Initializer(serviceAccountEmail)
-                   {
-                       Scopes = new[] { CalendarService.Scope.Calendar }
-                   }.FromCertificate(certificate));
+                    new ServiceAccountCredential.Initializer(serviceAccountEmail)
+                    {
+                        Scopes = new[] { CalendarService.Scope.Calendar }
+                    }.FromCertificate(certificate));
 
                 // Create the service
                 GoogleService = new CalendarService(new BaseClientService.Initializer()

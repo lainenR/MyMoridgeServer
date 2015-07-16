@@ -48,8 +48,10 @@ namespace MyMoridgeServer.Controllers
                     bookingEvent.VehicleRegNo = bookingEventDTO.VehicleRegNo;
                     bookingEvent.IsBooked = true;
                     bookingEvent.CompanyName = bookingEventDTO.CompanyName;
+                    bookingEvent.BookingHeader = bookingEventDTO.BookingHeader;
                     bookingEvent.BookingMessage = bookingEventDTO.BookingMessage;
                     bookingEvent.ResourceId = bookingEventDTO.ResourceId;
+                    bookingEvent.SupplierEmailAddress = bookingEventDTO.SupplierEmailAddress;
 
                     Booking booking = new Booking();
                     booking.BookEvent(bookingEvent);

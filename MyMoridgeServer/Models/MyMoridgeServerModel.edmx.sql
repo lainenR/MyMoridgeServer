@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, and Azure
 -- --------------------------------------------------
--- Date Created: 07/14/2015 09:39:24
+-- Date Created: 07/15/2015 12:28:59
 -- Generated from EDMX file: C:\Users\krevay\Documents\Visual Studio 2012\Projects\MyMoridgeServer\MyMoridgeServer\Models\MyMoridgeServerModel.edmx
 -- --------------------------------------------------
 
@@ -17,6 +17,9 @@ GO
 -- Dropping existing FOREIGN KEY constraints
 -- --------------------------------------------------
 
+IF OBJECT_ID(N'[dbo].[FK_BookingLogResource]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[BookingLogs] DROP CONSTRAINT [FK_BookingLogResource];
+GO
 
 -- --------------------------------------------------
 -- Dropping existing tables
@@ -30,6 +33,9 @@ IF OBJECT_ID(N'[dbo].[ErrorLogSet]', 'U') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[BookingLogs]', 'U') IS NOT NULL
     DROP TABLE [dbo].[BookingLogs];
+GO
+IF OBJECT_ID(N'[dbo].[Resources]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Resources];
 GO
 
 -- --------------------------------------------------
@@ -62,7 +68,9 @@ CREATE TABLE [dbo].[BookingLogs] (
     [VehicleRegNo] nvarchar(10)  NOT NULL,
     [CompanyName] nvarchar(max)  NULL,
     [BookingMessage] nvarchar(max)  NULL,
-    [ResourceId] int  NOT NULL
+    [ResourceId] int  NOT NULL,
+    [SupplierEmailAddress] nvarchar(100)  NOT NULL,
+    [BookingHeader] nvarchar(max)  NOT NULL
 );
 GO
 

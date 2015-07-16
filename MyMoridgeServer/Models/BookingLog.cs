@@ -24,6 +24,8 @@ namespace MyMoridgeServer.Models
         public string CompanyName { get; set; }
         public string BookingMessage { get; set; }
         public int ResourceId { get; set; }
+        public string SupplierEmailAddress { get; set; }
+        public string BookingHeader { get; set; }
     
         public virtual Resource Resource { get; set; }
     }
