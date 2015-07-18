@@ -3,25 +3,21 @@
 
  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
   <script>
+      var test;
       $(document).ready(function () {
-          $.getJSON("http://moridge-001-site1.smarterasp.net/api/booking/",
+
+          $.getJSON("http://service.moridge.se/api/booking/",
 
          function (Data) {
              $.each(Data, function (key, val) {
-                 var str = val.StartDateTime.substring(0, 10) + ' ' + val.StartDateTime.substring(11, 16) + '  -  ' + val.EndDateTime.substring(0, 10) + ' ' + val.EndDateTime.substring(11, 16);
-
+                 var str = val.StartDateTime.substring(0, 10) + ' ' + val.StartDateTime.substring(11, 16) + '  -  ' + val.EndDateTime.substring(0, 10) + ' ' + val.EndDateTime.substring(11, 16) + ' Resurs: ' + val.ResourceId;
                  $('<li/>', { text: str })
                  .appendTo($('#dates'));
-             })
-             .success(function () { alert("second success"); })
-             .error(function (jqXHR, textStatus, errorThrown) {
-                 console.log("error " + textStatus);
-                 console.log("incoming Text " + jqXHR.responseText);
              });
          });
 
           var customerId = 1;
-          $.getJSON("http://moridge-001-site1.smarterasp.net/api/vehicle/" + customerId,
+          $.getJSON("http://service.moridge.se/api/vehicle/" + customerId,
 
            function (Data) {
                $.each(Data, function (key, val) {
@@ -33,7 +29,7 @@
 
            });
 
-          $.getJSON("http://moridge-001-site1.smarterasp.net/api/booking/" + customerId,
+          $.getJSON("api/booking/" + customerId,
 
            function (Data) {
                $.each(Data, function (key, val) {
@@ -44,7 +40,9 @@
                        + ' Kundemail: ' + val.CustomerEmail
                        + ' Kundadress: ' + val.CustomerAddress
                        + ' Reg.nr.: ' + val.VehicleRegNo
-                       + ' Meddelande: ' + val.BookingMessage;
+                       + ' Meddelande: ' + val.BookingMessage
+                       + ' Rubrik: ' + val.BookingHeader
+                       + ' Leverantör: ' + val.SupplierEmailAddress;
 
                    $('<li/>', { text: str })
                    .appendTo($('#bookings'));
@@ -58,21 +56,52 @@
             var bookingEvent = {
                 'StartDateTime': $('#txtStart').val(),
                 'EndDateTime': $('#txtEnd').val(),
+                'CompanyName': $('#txtCompanyName').val(),
                 'CustomerOrgNo': $('#txtOrgNo').val(),
                 'CustomerEmail': $('#txtEmail').val(),
                 'CustomerAddress': $('#txtAddress').val(),
                 'VehicleRegNo': $('#txtRegNo').val(),
                 'IsBooked': 1,
-                'CompanyName': $('#txtCompanyName').val(),
+                'SupplierEmailAddress': $('#txtSupplier').val(),
+                'ResourceId': $('#txtResourceId').val(),
+                'BookingHeader': $('#txtBookingHeader').val(),
                 'BookingMessage': $('#txtBookingMessage').val()
             }
 
             $.ajax({
                 type: "POST",
-                url: 'http://moridge-001-site1.smarterasp.net/api/booking',
+                url: 'http://service.moridge.se/api/booking',
                 dataType: "json",
                 data: bookingEvent
             });
+        }
+
+        function FillData() {
+            var timeCompensation = document.getElementById('dates').textContent.substring(23, 24);
+            var dateStringStart = document.getElementById('dates').textContent.substring(11, 22);
+            var dateStringEnd = document.getElementById('dates').textContent.substring(32, 43);
+            var resourceId;
+
+            if (timeCompensation == 8) {
+                dateStringStart = dateStringStart + '00:00';
+                dateStringEnd = dateStringEnd + '04:00';
+            }
+            else {
+                dateStringStart = dateStringStart + '04:00';
+                dateStringEnd = dateStringEnd + '08:00';
+            }
+
+            document.getElementById('txtStart').value = dateStringStart;
+            document.getElementById('txtEnd').value = dateStringEnd;
+            document.getElementById('txtOrgNo').value = '1';
+            document.getElementById('txtCompanyName').value = 'Testföretag';
+            document.getElementById('txtEmail').value = 'test@test.se';
+            document.getElementById('txtAddress').value = 'Testgatan 1';
+            document.getElementById('txtRegNo').value = 'ABC123';
+            document.getElementById('txtSupplier').value = 'leverantör@test.se';
+            document.getElementById('txtResourceId').value = document.getElementById('dates').textContent.substring(57, 58);
+            document.getElementById('txtBookingHeader').value = 'Testbokning';
+            document.getElementById('txtBookingMessage').value = 'Detta är ett test!';
         }
 
     </script>
@@ -97,7 +126,7 @@
             <ul id="vehicles"/>
  
         </div>
-
+ 
         <div>
  
             <h1>Bokningar för specifik kund</h1>
@@ -105,12 +134,12 @@
             <ul id="bookings"/>
  
         </div>
- 
+
         <div>
  
-             <h1>Bokning</h1>
+            <h1>Bokning</h1>
             Startdatum och tid
-            <input type="text" id="txtStart" size="30"/><br />
+            <input type="text" id="txtStart" size="30" /><br />
             Slutdatum och tid
             <input type="text" id="txtEnd" size="30"/><br />
             Kund org. nummer
@@ -123,11 +152,17 @@
             <input type="text" id="txtAddress" size="30"/><br />
             Reg. nummer på fordon
             <input type="text" id="txtRegNo" size="30"/><br />
+            Leverantörsemail
+            <input type="text" id="txtSupplier" size="30"/><br />
+            Förarid
+            <input type="text" id="txtResourceId" size="30"/><br />
+            Bokningsrubrik
+            <input type="text" id="txtBookingHeader" size="30"/><br />
             Bokningsmeddelande
             <input type="text" id="txtBookingMessage" size="30"/><br />
 
+            <input type="button" value="Fyll data" onclick="FillData();" />
             <input type="button" value="Boka" onclick="BookEvent();" />
- 
  
             <p id="item" />
  
@@ -137,5 +172,3 @@
  
 </body> 
 </html>
-
-
