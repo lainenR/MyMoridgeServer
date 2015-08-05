@@ -28,28 +28,10 @@ namespace MyMoridgeServer.BusinessLogic
             return googleEvent;
         }
 
-        public static EventAttendee GetUserAttende(string email)
+        public static EventAttendee GetAttende(string email)
         {
 
             var attende = new EventAttendee();
-            attende.Email = email;
-
-            return attende;
-        }
-
-        public static EventAttendee GetMainMoridgeCalendarAttende(string email)
-        {
-            var attende = new EventAttendee();
-
-            attende.Email = email;
-
-            return attende;
-        }
-
-        public static EventAttendee GetMoridgeDriverCalendarAttende(string email)
-        {
-            var attende = new EventAttendee();
-
             attende.Email = email;
 
             return attende;

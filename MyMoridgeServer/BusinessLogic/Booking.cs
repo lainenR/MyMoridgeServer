@@ -47,9 +47,13 @@ namespace MyMoridgeServer.BusinessLogic
 
             var ev = GoogleCalendarHelper.GetGoogleEvent(bookingEvent);
             ev.Attendees = new List<EventAttendee>();
-            ev.Attendees.Add(GoogleCalendarHelper.GetUserAttende(bookingEvent.CustomerEmail));
-            ev.Attendees.Add(GoogleCalendarHelper.GetMoridgeDriverCalendarAttende(resource.CalendarEmail));
-            ev.Attendees.Add(GoogleCalendarHelper.GetMoridgeDriverCalendarAttende(bookingEvent.SupplierEmailAddress));
+            ev.Attendees.Add(GoogleCalendarHelper.GetAttende(bookingEvent.CustomerEmail));
+            ev.Attendees.Add(GoogleCalendarHelper.GetAttende(resource.CalendarEmail));
+            if (bookingEvent.SupplierEmailAddress.Length > 0)
+            {
+                ev.Attendees.Add(GoogleCalendarHelper.GetAttende(bookingEvent.SupplierEmailAddress));
+            }
+
             ev.Organizer = GoogleCalendarHelper.GetEventOrganizer();
 
             ev.Start = GoogleCalendarHelper.GetEventStart(bookingEvent.StartDateTime.AddHours(8)); //Compensate for timedifference between client- and serviceserver
