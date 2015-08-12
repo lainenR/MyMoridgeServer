@@ -49,7 +49,7 @@ namespace MyMoridgeServer.BusinessLogic
             ev.Attendees = new List<EventAttendee>();
             ev.Attendees.Add(GoogleCalendarHelper.GetAttende(bookingEvent.CustomerEmail));
             ev.Attendees.Add(GoogleCalendarHelper.GetAttende(resource.CalendarEmail));
-            if (bookingEvent.SupplierEmailAddress.Length > 0)
+            if (!String.IsNullOrEmpty(bookingEvent.SupplierEmailAddress))
             {
                 ev.Attendees.Add(GoogleCalendarHelper.GetAttende(bookingEvent.SupplierEmailAddress));
             }
@@ -115,7 +115,7 @@ namespace MyMoridgeServer.BusinessLogic
             log.CompanyName = ev.CompanyName;
             log.ResourceId = ev.ResourceId;
             log.BookingHeader = ev.BookingHeader;
-            log.SupplierEmailAddress = ev.SupplierEmailAddress;
+            log.SupplierEmailAddress = String.IsNullOrEmpty(ev.SupplierEmailAddress) ? "" : ev.SupplierEmailAddress;
 
             return log;
         }

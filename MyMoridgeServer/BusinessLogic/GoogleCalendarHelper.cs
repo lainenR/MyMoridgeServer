@@ -64,5 +64,22 @@ namespace MyMoridgeServer.BusinessLogic
 
             return data;
         }
+
+        public static Events HandleEventStartEndNull(Events events)
+        {
+            foreach (var ev in events.Items)
+            {
+                if (ev.Start.DateTime == null)
+                {
+                    ev.Start.DateTime = Convert.ToDateTime(ev.Start.Date + " 00:00:00");
+                }
+                if (ev.End.DateTime == null)
+                {
+                    ev.End.DateTime = Convert.ToDateTime(ev.End.Date + " 00:00:00");
+                }
+            }
+
+            return events;
+        }
     }
 }

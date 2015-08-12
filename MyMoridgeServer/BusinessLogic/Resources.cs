@@ -47,18 +47,18 @@ namespace MyMoridgeServer.BusinessLogic
         private List<BookingEvent> Get15AvailableDatesForBooking(Resource resource)
         {
             GoogleCalendar googleCalendar = new GoogleCalendar(resource.CalendarEmail, resource.CalendarServiceAccountEmail);
-            var events = googleCalendar.GetEventList();
+            var events = GoogleCalendarHelper.HandleEventStartEndNull(googleCalendar.GetEventList());
 
             //Debugging purpose
             //googleCalendar.DeleteEvent(Common.GetAppConfigValue(resource.CalendarEmail), "7dfntteacvfore0o5qdivp2g28");
 
             var daysBeforeBooking = resource.DaysBeforeBooking;
 
-            DateTime currentStartDate = DateTime.Now.AddDays(daysBeforeBooking).ToUniversalTime().AddHours(1); //Set swedish time
+            DateTime currentStartDate = DateTime.Now.AddDays(daysBeforeBooking).ToUniversalTime().AddHours(2); //Set swedish time
             DateTime currentEndDate = currentStartDate;
 
             TimeSpan morningStartTime = new TimeSpan(8, 0, 0);
-            TimeSpan morningEndTime = new TimeSpan(12, 0, 0);
+            TimeSpan morningEndTime = new TimeSpan(12, 0, 0); 
             TimeSpan afterLunchStartTime = new TimeSpan(13, 0, 0);
             TimeSpan afterLunchEndTime = new TimeSpan(17, 0, 0);
 
@@ -88,27 +88,17 @@ namespace MyMoridgeServer.BusinessLogic
                         isMorningTime = true;
                     }
 
-                    //Check if not all slots are booked
-                    if (events.Items.Count(date => 
-                                            (((DateTime)date.Start.DateTime).ToUniversalTime() >= currentStartDate.ToUniversalTime() &&
-                                            ((DateTime)date.Start.DateTime).ToUniversalTime() < currentEndDate.ToUniversalTime()) ||
-                                            (((DateTime)date.End.DateTime).ToUniversalTime() > currentStartDate.ToUniversalTime() &&
-                                            ((DateTime)date.End.DateTime).ToUniversalTime() <= currentEndDate.ToUniversalTime())) < maxBookings)
+                    if(IsSlotAvailable(events.Items, currentStartDate, currentEndDate, maxBookings) &&
+                        IsResourceWorking(events.Items, currentStartDate, currentEndDate))
                     {
-                        //Check if resource is working 
-                        if (events.Items.Count(free => (DateTime)free.End.DateTime > currentStartDate &&
-                        (DateTime)free.End.DateTime <= currentEndDate &&
-                        free.Summary.ToLower().StartsWith("ledig")) == 0)
-                        {
-                            BookingEvent bookingEvent = new BookingEvent();
+                        BookingEvent bookingEvent = new BookingEvent();
 
-                            bookingEvent.IsBooked = false;
-                            bookingEvent.StartDateTime = currentStartDate;
-                            bookingEvent.EndDateTime = currentEndDate;
-                            bookingEvent.ResourceId = resource.Id;
+                        bookingEvent.IsBooked = false;
+                        bookingEvent.StartDateTime = currentStartDate;
+                        bookingEvent.EndDateTime = currentEndDate;
+                        bookingEvent.ResourceId = resource.Id;
 
-                            dateList.Add(bookingEvent);
-                        }
+                        dateList.Add(bookingEvent);
                     }
                 }
 
@@ -120,6 +110,79 @@ namespace MyMoridgeServer.BusinessLogic
             }
 
             return dateList;
-        }        
+        }
+
+        private bool IsSlotAvailable(IList<Google.Apis.Calendar.v3.Data.Event> events, DateTime startDate, DateTime endDate, int maxBookings)
+        {
+            startDate = startDate.AddHours(-2); //Set UTC time 
+            endDate = endDate.AddHours(-2); //Set UTC time
+
+            var start = events[19].Start.DateTime;
+            var end = events[19].End.DateTime;
+            bool test = false;
+
+            if (((DateTime)start).ToUniversalTime() < startDate.ToUniversalTime())
+            {
+                test = true;
+            }
+            if(((DateTime)end).ToUniversalTime() > endDate.ToUniversalTime())
+            {
+                test = true;
+            }
+
+
+            return events.Count(booked =>
+                            (
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() >= startDate.ToUniversalTime() &&
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
+                            )
+                            ||
+                            (
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() <= endDate.ToUniversalTime()
+                            )
+                            ||
+                            (
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() < startDate.ToUniversalTime() &&
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() > endDate.ToUniversalTime()
+                            )
+                            ||
+                            (
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
+                            )
+                        ) < maxBookings;
+        }
+        
+        private bool IsResourceWorking(IList<Google.Apis.Calendar.v3.Data.Event> events, DateTime startDate, DateTime endDate)
+        {
+            startDate = startDate.AddHours(-2); //Set UTC time 
+            endDate = endDate.AddHours(-2); //Set UTC time
+
+            return (events.Count(free =>
+                        (
+                            (
+                                ((DateTime)free.Start.DateTime).ToUniversalTime() >= startDate.ToUniversalTime() &&
+                                ((DateTime)free.Start.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
+                             )
+                             ||
+                             (
+                                ((DateTime)free.End.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
+                                ((DateTime)free.End.DateTime).ToUniversalTime() <= endDate.ToUniversalTime()
+                             )
+                             ||
+                             (
+                                ((DateTime)free.Start.DateTime).ToUniversalTime() < startDate.ToUniversalTime() &&
+                                ((DateTime)free.End.DateTime).ToUniversalTime() > endDate.ToUniversalTime()
+                             )
+                             ||
+                             (
+                                ((DateTime)free.Start.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
+                                ((DateTime)free.End.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
+                             )
+                        )
+                        &&
+                        free.Summary.ToLower().StartsWith("ledig")) == 0);
+        }
     }
 }

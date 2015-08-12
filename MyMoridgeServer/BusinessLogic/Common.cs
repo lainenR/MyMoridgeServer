@@ -34,7 +34,7 @@ namespace MyMoridgeServer.BusinessLogic
 
             ErrorLog log = new ErrorLog();
 
-            log.DatetTimeStamp = DateTime.UtcNow.AddHours(1);
+            log.DatetTimeStamp = DateTime.UtcNow.AddHours(2);
             log.ErrorMessage = ex.Message + ": " + ex.StackTrace.ToString();
 
             db.ErrorLogSet.Add(log);
