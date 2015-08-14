@@ -117,20 +117,6 @@ namespace MyMoridgeServer.BusinessLogic
             startDate = startDate.AddHours(-2); //Set UTC time 
             endDate = endDate.AddHours(-2); //Set UTC time
 
-            var start = events[19].Start.DateTime;
-            var end = events[19].End.DateTime;
-            bool test = false;
-
-            if (((DateTime)start).ToUniversalTime() < startDate.ToUniversalTime())
-            {
-                test = true;
-            }
-            if(((DateTime)end).ToUniversalTime() > endDate.ToUniversalTime())
-            {
-                test = true;
-            }
-
-
             return events.Count(booked =>
                             (
                                 ((DateTime)booked.Start.DateTime).ToUniversalTime() >= startDate.ToUniversalTime() &&
