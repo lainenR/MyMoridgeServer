@@ -19,7 +19,7 @@ namespace MyMoridgeServer.BusinessLogic
             {
                 if(!String.IsNullOrWhiteSpace(ev.BookingMessage))
                 {
-                    header.Append("[K] ");
+                    header.Append("[K]");
                 }
                 header.Append("Moridge - ").Append(ev.CompanyName).Append(" ").Append(ev.VehicleRegNo);
                 ev.BookingHeader = header.ToString();
