@@ -56,8 +56,8 @@ namespace MyMoridgeServer.BusinessLogic
 
             ev.Organizer = GoogleCalendarHelper.GetEventOrganizer();
 
-            ev.Start = GoogleCalendarHelper.GetEventStart(bookingEvent.StartDateTime.AddHours(8)); //Compensate for timedifference between client- and serviceserver
-            ev.End = GoogleCalendarHelper.GetEventEnd(bookingEvent.EndDateTime.AddHours(8)); //Compensate for timedifference between client- and serviceserver
+            ev.Start = GoogleCalendarHelper.GetEventStart(bookingEvent.StartDateTime.AddHours(10)); //Compensate for timedifference between client- and serviceserver
+            ev.End = GoogleCalendarHelper.GetEventEnd(bookingEvent.EndDateTime.AddHours(10)); //Compensate for timedifference between client- and serviceserver
            
             GoogleCalendar calendar = new GoogleCalendar(Common.GetAppConfigValue("MoridgeOrganizerCalendarEmail"), Common.GetAppConfigValue("MoridgeMainCalendarEmail"));
             calendar.InsertEvent(ev);
