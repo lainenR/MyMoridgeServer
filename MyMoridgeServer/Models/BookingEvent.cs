@@ -19,5 +19,6 @@ namespace MyMoridgeServer.Models
         public bool IsBooked { get; set; }
         public int ResourceId { get; set; }
         public string SupplierEmailAddress { get; set; }
+        public List<string> Attendees { get; set; }
     }
 }

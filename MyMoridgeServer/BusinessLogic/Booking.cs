@@ -45,15 +45,14 @@ namespace MyMoridgeServer.BusinessLogic
                 db.SaveChanges();
             }
 
-            var ev = GoogleCalendarHelper.GetGoogleEvent(bookingEvent);
-            ev.Attendees = new List<EventAttendee>();
-            ev.Attendees.Add(GoogleCalendarHelper.GetAttende(bookingEvent.CustomerEmail));
-            ev.Attendees.Add(GoogleCalendarHelper.GetAttende(resource.CalendarEmail));
-            if (!String.IsNullOrEmpty(bookingEvent.SupplierEmailAddress))
-            {
-                ev.Attendees.Add(GoogleCalendarHelper.GetAttende(bookingEvent.SupplierEmailAddress));
-            }
+            List<string> emails = bookingEvent.Attendees ?? new List<string>();
+            emails.Add(bookingEvent.CustomerEmail);
+            emails.Add(resource.CalendarEmail);
+            emails.Add(bookingEvent.SupplierEmailAddress);
 
+            var ev = GoogleCalendarHelper.GetGoogleEvent(bookingEvent);
+            ev.Attendees = GoogleCalendarHelper.GetAttendees(emails);
+              
             ev.Organizer = GoogleCalendarHelper.GetEventOrganizer();
 
             ev.Start = GoogleCalendarHelper.GetEventStart(bookingEvent.StartDateTime.AddHours(10)); //Compensate for timedifference between client- and serviceserver
