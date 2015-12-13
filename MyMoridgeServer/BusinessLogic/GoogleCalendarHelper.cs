@@ -32,13 +32,21 @@ namespace MyMoridgeServer.BusinessLogic
             return googleEvent;
         }
 
-        public static EventAttendee GetAttende(string email)
+        public static List<EventAttendee> GetAttendees(List<string> emails)
         {
+            List<EventAttendee> attendees = new List<EventAttendee>();
 
-            var attende = new EventAttendee();
-            attende.Email = email;
+            foreach (string email in emails)
+            {
+                if (!String.IsNullOrEmpty(email))
+                {
+                    var attendee = new EventAttendee();
+                    attendee.Email = email;
+                    attendees.Add(attendee);
+                }
+            }
 
-            return attende;
+            return attendees;
         }
 
         public static EventDateTime GetEventStart(DateTime start)

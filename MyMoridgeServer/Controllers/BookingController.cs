@@ -52,6 +52,7 @@ namespace MyMoridgeServer.Controllers
                     bookingEvent.BookingMessage = bookingEventDTO.BookingMessage;
                     bookingEvent.ResourceId = bookingEventDTO.ResourceId;
                     bookingEvent.SupplierEmailAddress = bookingEventDTO.SupplierEmailAddress;
+                    bookingEvent.Attendees = bookingEventDTO.Attendees;
 
                     Booking booking = new Booking();
                     booking.BookEvent(bookingEvent);
@@ -63,7 +64,9 @@ namespace MyMoridgeServer.Controllers
             }
             catch (Exception ex)
             {
-                Common.LogError(ex);
+                Exception e = new Exception("CustomerOrgNo:" + bookingEventDTO.CustomerOrgNo ?? "", ex);
+
+                Common.LogError(e);    
             }
         }
 
