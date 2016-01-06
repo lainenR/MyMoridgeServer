@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using System.Web;
 using System.Web.Configuration;
 using System.Configuration;
@@ -55,10 +56,12 @@ namespace MyMoridgeServer.BusinessLogic
             {
                 CreateGoogleService();
 
-                GoogleService.Events.List(CalendarEmail).TimeMin = DateTime.Now;
-                GoogleService.Events.List(CalendarEmail).TimeMax = DateTime.Now.AddMonths(2);
+                EventsResource.ListRequest request = GoogleService.Events.List("MoridgeBokningF1@gmail.com");
+                request.TimeMin = DateTime.Now.AddDays(-1);
+                request.TimeMax = DateTime.Now.AddMonths(3);
+                request.ShowDeleted = false;
 
-                return GoogleService.Events.List(CalendarEmail).Execute();
+                return request.Execute();
             }
             catch (Exception e)
             {
