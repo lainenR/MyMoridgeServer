@@ -47,7 +47,7 @@ namespace MyMoridgeServer.BusinessLogic
         private List<BookingEvent> Get15AvailableDatesForBooking(Resource resource)
         {
             GoogleCalendar googleCalendar = new GoogleCalendar(resource.CalendarEmail, resource.CalendarServiceAccountEmail);
-            var events = GoogleCalendarHelper.HandleEventStartEndNull(googleCalendar.GetEventList());
+            var events = GoogleCalendarHelper.HandleEventStartEndNull(googleCalendar.GetEventList(resource.CalendarEmail));
 
             //Debugging purpose
             //googleCalendar.DeleteEvent(Common.GetAppConfigValue(resource.CalendarEmail), "7dfntteacvfore0o5qdivp2g28");
