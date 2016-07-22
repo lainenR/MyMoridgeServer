@@ -50,13 +50,13 @@ namespace MyMoridgeServer.BusinessLogic
             }
         }
 
-        public Events GetEventList()
+        public Events GetEventList(string calendarEmail)
         {
             try
             {
                 CreateGoogleService();
 
-                EventsResource.ListRequest request = GoogleService.Events.List("MoridgeBokningF1@gmail.com");
+                EventsResource.ListRequest request = GoogleService.Events.List(calendarEmail);
                 request.TimeMin = DateTime.Now.AddDays(-1);
                 request.TimeMax = DateTime.Now.AddMonths(3);
                 request.ShowDeleted = false;

@@ -10,6 +10,8 @@
     <EntitySet Name="ErrorLogSet" EntityType="MyMoridgeServerModel.Store.ErrorLogSet" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="BookingLogs" EntityType="MyMoridgeServerModel.Store.BookingLogs" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="Resources" EntityType="MyMoridgeServerModel.Store.Resources" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Users" EntityType="MyMoridgeServerModel.Store.Users" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="EmailLogs" EntityType="MyMoridgeServerModel.Store.EmailLogs" store:Type="Tables" Schema="dbo" />
     <AssociationSet Name="BookingLogResource" Association="MyMoridgeServerModel.Store.BookingLogResource">
       <End Role="BookingLog" EntitySet="BookingLogs" />
       <End Role="Resource" EntitySet="Resources" />
@@ -61,6 +63,25 @@
     <Property Name="DaysBeforeBooking" Type="int" Nullable="false" />
     <Property Name="BookingPriority" Type="int" Nullable="false" />
   </EntityType>
+  <EntityType Name="Users">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" Nullable="false" MaxLength="100" />
+    <Property Name="Password" Type="nvarchar" Nullable="false" MaxLength="100" />
+    <Property Name="LastLogin" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="EmailLogs">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CustomerEmail" Type="nvarchar" Nullable="false" MaxLength="100" />
+    <Property Name="CompanyName" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="VehicleRegNo" Type="nvarchar" Nullable="false" MaxLength="10" />
+    <Property Name="Sent" Type="datetime" Nullable="false" />
+  </EntityType>
   <Association Name="BookingLogResource">
     <End Role="BookingLog" Type="MyMoridgeServerModel.Store.BookingLogs" Multiplicity="*" />
     <End Role="Resource" Type="MyMoridgeServerModel.Store.Resources" Multiplicity="1" />
@@ -86,6 +107,8 @@
             <End Role="BookingLog" EntitySet="BookingLogs" />
             <End Role="Resource" EntitySet="Resources" />
           </AssociationSet>
+          <EntitySet Name="Users" EntityType="MyMoridgeServerModel.User" />
+          <EntitySet Name="EmailLogs" EntityType="MyMoridgeServerModel.EmailLog" />
         </EntityContainer>
         <EntityType Name="CustomerVehicle">
           <Key>
@@ -147,6 +170,25 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="UserName" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="Password" Nullable="false" MaxLength="100" />
+          <Property Type="DateTime" Name="LastLogin" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EmailLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="CustomerEmail" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="CompanyName" Nullable="false" MaxLength="Max" />
+          <Property Type="String" Name="VehicleRegNo" Nullable="false" MaxLength="10" />
+          <Property Type="DateTime" Name="Sent" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -199,6 +241,27 @@
           <ScalarProperty Name="MaxBookingsAfterLunch" ColumnName="MaxBookingsAfterLunch" />
           <ScalarProperty Name="DaysBeforeBooking" ColumnName="DaysBeforeBooking" />
           <ScalarProperty Name="BookingPriority" ColumnName="BookingPriority" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Users">
+      <EntityTypeMapping TypeName="IsTypeOf(MyMoridgeServerModel.User)">
+        <MappingFragment StoreEntitySet="Users">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="LastLogin" ColumnName="LastLogin" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="EmailLogs">
+      <EntityTypeMapping TypeName="IsTypeOf(MyMoridgeServerModel.EmailLog)">
+        <MappingFragment StoreEntitySet="EmailLogs">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="CustomerEmail" ColumnName="CustomerEmail" />
+          <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+          <ScalarProperty Name="VehicleRegNo" ColumnName="VehicleRegNo" />
+          <ScalarProperty Name="Sent" ColumnName="Sent" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

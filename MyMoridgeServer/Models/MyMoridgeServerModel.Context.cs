@@ -29,5 +29,7 @@ namespace MyMoridgeServer.Models
         public DbSet<ErrorLog> ErrorLogSet { get; set; }
         public DbSet<BookingLog> BookingLogs { get; set; }
         public DbSet<Resource> Resources { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<EmailLog> EmailLogs { get; set; }
     }
 }

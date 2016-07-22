@@ -100,6 +100,33 @@ namespace MyMoridgeServer.BusinessLogic
             return events;
         }
 
+        public List<BookingEvent> GetBookingsLastBooking()
+        {
+            var log = db.BookingLogs.OrderBy(c => c.CustomerEmail).Distinct();
+            List<BookingEvent> events = new List<BookingEvent>();
+
+            foreach (var item in log)
+            {
+                BookingEvent ev = new BookingEvent();
+
+                ev.StartDateTime = item.StartDateTime;
+                ev.EndDateTime = item.EndDateTime;
+                ev.VehicleRegNo = item.VehicleRegNo;
+                ev.CustomerAddress = item.CustomerAddress;
+                ev.CustomerEmail = item.CustomerEmail;
+                ev.CustomerOrgNo = item.CustomerOrgNo;
+                ev.IsBooked = true;
+                ev.BookingHeader = item.BookingHeader;
+                ev.BookingMessage = item.BookingMessage;
+                ev.SupplierEmailAddress = item.SupplierEmailAddress;
+                ev.CompanyName = item.CompanyName;
+
+                events.Add(ev);
+            }
+
+            return events;
+        }
+
         private BookingLog GetBookingLog(BookingEvent ev)
         {
             BookingLog log = new BookingLog();

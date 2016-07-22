@@ -2,13 +2,13 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, and Azure
 -- --------------------------------------------------
--- Date Created: 07/15/2015 12:28:59
+-- Date Created: 07/16/2016 14:24:30
 -- Generated from EDMX file: C:\Users\krevay\Documents\Visual Studio 2012\Projects\MyMoridgeServer\MyMoridgeServer\Models\MyMoridgeServerModel.edmx
 -- --------------------------------------------------
 
 SET QUOTED_IDENTIFIER OFF;
 GO
-USE [MyMoridgeServer];
+USE [master];
 GO
 IF SCHEMA_ID(N'dbo') IS NULL EXECUTE(N'CREATE SCHEMA [dbo]');
 GO
@@ -87,6 +87,25 @@ CREATE TABLE [dbo].[Resources] (
 );
 GO
 
+-- Creating table 'Users'
+CREATE TABLE [dbo].[Users] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [UserName] nvarchar(100)  NOT NULL,
+    [Password] nvarchar(100)  NOT NULL,
+    [LastLogin] datetime  NOT NULL
+);
+GO
+
+-- Creating table 'EmailLogs'
+CREATE TABLE [dbo].[EmailLogs] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [CustomerEmail] nvarchar(100)  NOT NULL,
+    [CompanyName] nvarchar(max)  NOT NULL,
+    [VehicleRegNo] nvarchar(10)  NOT NULL,
+    [Sent] datetime  NOT NULL
+);
+GO
+
 -- --------------------------------------------------
 -- Creating all PRIMARY KEY constraints
 -- --------------------------------------------------
@@ -112,6 +131,18 @@ GO
 -- Creating primary key on [Id] in table 'Resources'
 ALTER TABLE [dbo].[Resources]
 ADD CONSTRAINT [PK_Resources]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'Users'
+ALTER TABLE [dbo].[Users]
+ADD CONSTRAINT [PK_Users]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'EmailLogs'
+ALTER TABLE [dbo].[EmailLogs]
+ADD CONSTRAINT [PK_EmailLogs]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 

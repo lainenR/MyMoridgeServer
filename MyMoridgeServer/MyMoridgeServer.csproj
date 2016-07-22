@@ -176,6 +176,8 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="BusinessLogic\GoogleCalendarHelper.cs" />
+    <Compile Include="BusinessLogic\Invitation.cs" />
+    <Compile Include="BusinessLogic\Login.cs" />
     <Compile Include="BusinessLogic\Resources.cs" />
     <Compile Include="CorsHandler.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -199,6 +201,10 @@
     <Compile Include="Models\CustomerVehicle.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Email.cs" />
+    <Compile Include="Models\EmailLog.cs">
+      <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ErrorLog.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
     </Compile>
@@ -218,6 +224,9 @@
       <DependentUpon>MyMoridgeServerModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\Resource.cs">
+      <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\User.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
