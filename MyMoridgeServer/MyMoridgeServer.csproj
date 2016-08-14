@@ -208,6 +208,10 @@
     <Compile Include="Models\ErrorLog.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\InvitationModel.cs" />
+    <Compile Include="Models\InvitationVoucher.cs">
+      <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\MyMoridgeServerModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -286,6 +290,8 @@
     <Content Include="Content\themes\base\minified\jquery.ui.slider.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
+    <Content Include="Images\logotype.png" />
+    <Content Include="invitation.html" />
     <Content Include="TestPageProd.html" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />

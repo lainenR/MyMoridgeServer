@@ -2,13 +2,13 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, and Azure
 -- --------------------------------------------------
--- Date Created: 07/16/2016 14:24:30
--- Generated from EDMX file: C:\Users\krevay\Documents\Visual Studio 2012\Projects\MyMoridgeServer\MyMoridgeServer\Models\MyMoridgeServerModel.edmx
+-- Date Created: 08/07/2016 11:11:02
+-- Generated from EDMX file: C:\Users\krevay\documents\visual studio 2012\Projects\MyMoridgeServer\MyMoridgeServer\Models\MyMoridgeServerModel.edmx
 -- --------------------------------------------------
 
 SET QUOTED_IDENTIFIER OFF;
 GO
-USE [master];
+USE [MyMoridgeServer];
 GO
 IF SCHEMA_ID(N'dbo') IS NULL EXECUTE(N'CREATE SCHEMA [dbo]');
 GO
@@ -36,6 +36,12 @@ IF OBJECT_ID(N'[dbo].[BookingLogs]', 'U') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[Resources]', 'U') IS NOT NULL
     DROP TABLE [dbo].[Resources];
+GO
+IF OBJECT_ID(N'[dbo].[Users]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Users];
+GO
+IF OBJECT_ID(N'[dbo].[EmailLogs]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[EmailLogs];
 GO
 
 -- --------------------------------------------------
@@ -106,6 +112,15 @@ CREATE TABLE [dbo].[EmailLogs] (
 );
 GO
 
+-- Creating table 'InvitationVouchers'
+CREATE TABLE [dbo].[InvitationVouchers] (
+    [VoucherId] uniqueidentifier  NOT NULL,
+    [BookingLogId] int  NOT NULL,
+    [StartDateTime] datetime  NOT NULL,
+    [EndDateTime] datetime  NOT NULL
+);
+GO
+
 -- --------------------------------------------------
 -- Creating all PRIMARY KEY constraints
 -- --------------------------------------------------
@@ -146,6 +161,12 @@ ADD CONSTRAINT [PK_EmailLogs]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 
+-- Creating primary key on [VoucherId] in table 'InvitationVouchers'
+ALTER TABLE [dbo].[InvitationVouchers]
+ADD CONSTRAINT [PK_InvitationVouchers]
+    PRIMARY KEY CLUSTERED ([VoucherId] ASC);
+GO
+
 -- --------------------------------------------------
 -- Creating all FOREIGN KEY constraints
 -- --------------------------------------------------
@@ -162,6 +183,20 @@ ADD CONSTRAINT [FK_BookingLogResource]
 CREATE INDEX [IX_FK_BookingLogResource]
 ON [dbo].[BookingLogs]
     ([ResourceId]);
+GO
+
+-- Creating foreign key on [BookingLogId] in table 'InvitationVouchers'
+ALTER TABLE [dbo].[InvitationVouchers]
+ADD CONSTRAINT [FK_BookingLogInvitationVoucher]
+    FOREIGN KEY ([BookingLogId])
+    REFERENCES [dbo].[BookingLogs]
+        ([Id])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_BookingLogInvitationVoucher'
+CREATE INDEX [IX_FK_BookingLogInvitationVoucher]
+ON [dbo].[InvitationVouchers]
+    ([BookingLogId]);
 GO
 
 -- --------------------------------------------------
