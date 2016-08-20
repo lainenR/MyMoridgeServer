@@ -15,7 +15,7 @@ namespace MyMoridgeServer.Models
         public Email()
         {
             Subject = "Vi har lediga tider till dig";
-            BodyText = "Hej!\n\nVi har lediga tvätttider för lediga dig just nu, boka nu genom att klicka på något av datumen nedan.";
+            BodyText = "Hej!\n\nVi har lediga tvätttider till dig, boka nu genom att klicka på ett av datumen nedan.";
             Recipients = new List<EmailLog>();
         }
     }

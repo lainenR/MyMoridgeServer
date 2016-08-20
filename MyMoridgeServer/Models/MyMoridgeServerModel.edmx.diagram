@@ -14,6 +14,7 @@
         <EntityTypeShape EntityType="MyMoridgeServerModel.EmailLog" Width="1.5" PointX="4" PointY="4.375" />
         <EntityTypeShape EntityType="MyMoridgeServerModel.InvitationVoucher" Width="1.5" PointX="5.5" PointY="2.25" />
         <AssociationConnector Association="MyMoridgeServerModel.BookingLogInvitationVoucher" />
+        <AssociationConnector Association="MyMoridgeServerModel.EmailLogInvitationVoucher" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

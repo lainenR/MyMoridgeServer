@@ -21,6 +21,10 @@
       <End Role="BookingLog" EntitySet="BookingLogs" />
       <End Role="InvitationVoucher" EntitySet="InvitationVouchers" />
     </AssociationSet>
+    <AssociationSet Name="EmailLogInvitationVoucher" Association="MyMoridgeServerModel.Store.EmailLogInvitationVoucher">
+      <End Role="EmailLog" EntitySet="EmailLogs" />
+      <End Role="InvitationVoucher" EntitySet="InvitationVouchers" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="CustomerVehicles">
     <Key>
@@ -95,6 +99,7 @@
     <Property Name="BookingLogId" Type="int" Nullable="false" />
     <Property Name="StartDateTime" Type="datetime" Nullable="false" />
     <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+    <Property Name="EmailLogId" Type="int" Nullable="false" />
   </EntityType>
   <Association Name="BookingLogResource">
     <End Role="BookingLog" Type="MyMoridgeServerModel.Store.BookingLogs" Multiplicity="*" />
@@ -120,6 +125,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="EmailLogInvitationVoucher">
+    <End Role="EmailLog" Type="MyMoridgeServerModel.Store.EmailLogs" Multiplicity="1" />
+    <End Role="InvitationVoucher" Type="MyMoridgeServerModel.Store.InvitationVouchers" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EmailLog">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="InvitationVoucher">
+        <PropertyRef Name="EmailLogId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -138,6 +155,10 @@
           <EntitySet Name="InvitationVouchers" EntityType="MyMoridgeServerModel.InvitationVoucher" />
           <AssociationSet Name="BookingLogInvitationVoucher" Association="MyMoridgeServerModel.BookingLogInvitationVoucher">
             <End Role="BookingLog" EntitySet="BookingLogs" />
+            <End Role="InvitationVoucher" EntitySet="InvitationVouchers" />
+          </AssociationSet>
+          <AssociationSet Name="EmailLogInvitationVoucher" Association="MyMoridgeServerModel.EmailLogInvitationVoucher">
+            <End Role="EmailLog" EntitySet="EmailLogs" />
             <End Role="InvitationVoucher" EntitySet="InvitationVouchers" />
           </AssociationSet>
         </EntityContainer>
@@ -219,6 +240,7 @@
           <Property Type="String" Name="CompanyName" Nullable="false" MaxLength="Max" />
           <Property Type="String" Name="VehicleRegNo" Nullable="false" MaxLength="10" />
           <Property Type="DateTime" Name="Sent" Nullable="false" />
+          <NavigationProperty Name="InvitationVoucher" Relationship="MyMoridgeServerModel.EmailLogInvitationVoucher" FromRole="EmailLog" ToRole="InvitationVoucher" />
         </EntityType>
         <EntityType Name="InvitationVoucher">
           <Key>
@@ -229,6 +251,8 @@
           <Property Type="Int32" Name="BookingLogId" Nullable="false" />
           <Property Type="DateTime" Name="StartDateTime" Nullable="false" />
           <Property Type="DateTime" Name="EndDateTime" Nullable="false" />
+          <NavigationProperty Name="EmailLog" Relationship="MyMoridgeServerModel.EmailLogInvitationVoucher" FromRole="InvitationVoucher" ToRole="EmailLog" />
+          <Property Type="Int32" Name="EmailLogId" Nullable="false" />
         </EntityType>
         <Association Name="BookingLogInvitationVoucher">
           <End Type="MyMoridgeServerModel.BookingLog" Role="BookingLog" Multiplicity="1" />
@@ -239,6 +263,18 @@
             </Principal>
             <Dependent Role="InvitationVoucher">
               <PropertyRef Name="BookingLogId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="EmailLogInvitationVoucher">
+          <End Type="MyMoridgeServerModel.EmailLog" Role="EmailLog" Multiplicity="1" />
+          <End Type="MyMoridgeServerModel.InvitationVoucher" Role="InvitationVoucher" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailLog">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvitationVoucher">
+              <PropertyRef Name="EmailLogId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -325,6 +361,7 @@
           <ScalarProperty Name="BookingLogId" ColumnName="BookingLogId" />
           <ScalarProperty Name="StartDateTime" ColumnName="StartDateTime" />
           <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+          <ScalarProperty Name="EmailLogId" ColumnName="EmailLogId" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

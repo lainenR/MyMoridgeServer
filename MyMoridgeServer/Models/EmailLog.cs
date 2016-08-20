@@ -14,10 +14,17 @@ namespace MyMoridgeServer.Models
     
     public partial class EmailLog
     {
+        public EmailLog()
+        {
+            this.InvitationVoucher = new HashSet<InvitationVoucher>();
+        }
+    
         public int Id { get; set; }
         public string CustomerEmail { get; set; }
         public string CompanyName { get; set; }
         public string VehicleRegNo { get; set; }
         public System.DateTime Sent { get; set; }
+    
+        public virtual ICollection<InvitationVoucher> InvitationVoucher { get; set; }
     }
 }

@@ -177,6 +177,8 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="BusinessLogic\GoogleCalendarHelper.cs" />
     <Compile Include="BusinessLogic\Invitation.cs" />
+    <Compile Include="BusinessLogic\InvitationMessage.cs" />
+    <Compile Include="BusinessLogic\InvitationVoucherHelper.cs" />
     <Compile Include="BusinessLogic\Login.cs" />
     <Compile Include="BusinessLogic\Resources.cs" />
     <Compile Include="CorsHandler.cs" />
@@ -190,6 +192,13 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Controllers\VehicleController.cs" />
+    <Compile Include="InvitationBooking.aspx.cs">
+      <DependentUpon>InvitationBooking.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="InvitationBooking.aspx.designer.cs">
+      <DependentUpon>InvitationBooking.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Models\BookingEvent.cs" />
     <Compile Include="Models\BookingEventDTO.cs" />
     <Compile Include="Global.asax.cs">
@@ -292,6 +301,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Images\logotype.png" />
     <Content Include="invitation.html" />
+    <Content Include="InvitationBooking.aspx" />
     <Content Include="TestPageProd.html" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />

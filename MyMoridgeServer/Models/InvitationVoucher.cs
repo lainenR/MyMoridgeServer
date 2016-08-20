@@ -18,7 +18,9 @@ namespace MyMoridgeServer.Models
         public int BookingLogId { get; set; }
         public System.DateTime StartDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
+        public int EmailLogId { get; set; }
     
         public virtual BookingLog BookingLog { get; set; }
+        public virtual EmailLog EmailLog { get; set; }
     }
 }

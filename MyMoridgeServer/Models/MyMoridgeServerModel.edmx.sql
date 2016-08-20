@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, and Azure
 -- --------------------------------------------------
--- Date Created: 08/07/2016 11:11:02
+-- Date Created: 08/18/2016 22:07:02
 -- Generated from EDMX file: C:\Users\krevay\documents\visual studio 2012\Projects\MyMoridgeServer\MyMoridgeServer\Models\MyMoridgeServerModel.edmx
 -- --------------------------------------------------
 
@@ -19,6 +19,9 @@ GO
 
 IF OBJECT_ID(N'[dbo].[FK_BookingLogResource]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[BookingLogs] DROP CONSTRAINT [FK_BookingLogResource];
+GO
+IF OBJECT_ID(N'[dbo].[FK_BookingLogInvitationVoucher]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[InvitationVouchers] DROP CONSTRAINT [FK_BookingLogInvitationVoucher];
 GO
 
 -- --------------------------------------------------
@@ -42,6 +45,9 @@ IF OBJECT_ID(N'[dbo].[Users]', 'U') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[EmailLogs]', 'U') IS NOT NULL
     DROP TABLE [dbo].[EmailLogs];
+GO
+IF OBJECT_ID(N'[dbo].[InvitationVouchers]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[InvitationVouchers];
 GO
 
 -- --------------------------------------------------
@@ -117,7 +123,8 @@ CREATE TABLE [dbo].[InvitationVouchers] (
     [VoucherId] uniqueidentifier  NOT NULL,
     [BookingLogId] int  NOT NULL,
     [StartDateTime] datetime  NOT NULL,
-    [EndDateTime] datetime  NOT NULL
+    [EndDateTime] datetime  NOT NULL,
+    [EmailLogId] int  NOT NULL
 );
 GO
 
@@ -197,6 +204,20 @@ ADD CONSTRAINT [FK_BookingLogInvitationVoucher]
 CREATE INDEX [IX_FK_BookingLogInvitationVoucher]
 ON [dbo].[InvitationVouchers]
     ([BookingLogId]);
+GO
+
+-- Creating foreign key on [EmailLogId] in table 'InvitationVouchers'
+ALTER TABLE [dbo].[InvitationVouchers]
+ADD CONSTRAINT [FK_EmailLogInvitationVoucher]
+    FOREIGN KEY ([EmailLogId])
+    REFERENCES [dbo].[EmailLogs]
+        ([Id])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_EmailLogInvitationVoucher'
+CREATE INDEX [IX_FK_EmailLogInvitationVoucher]
+ON [dbo].[InvitationVouchers]
+    ([EmailLogId]);
 GO
 
 -- --------------------------------------------------
