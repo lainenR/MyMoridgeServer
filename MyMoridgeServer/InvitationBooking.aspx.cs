@@ -17,8 +17,23 @@ namespace MyMoridgeServer
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            var ok = DoBook();
-            RedirectUser(ok);
+            if (DoSecurityCheck())
+            {
+                var ok = DoBook();
+                RedirectUser(ok);
+            }
+        }
+
+        private bool DoSecurityCheck()
+        {
+            bool ok = false;
+
+            if (Request.QueryString["v"] != null)
+            {
+                ok = true;
+            }
+
+            return ok;
         }
 
         private bool DoBook()
