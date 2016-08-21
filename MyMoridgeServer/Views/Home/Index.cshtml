@@ -42,7 +42,7 @@
                                             @Html.DisplayFor(modelItem => item.VehicleRegNo)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.StartDateTime)
+                                            @Html.DisplayFor(modelItem => item.StartDateTime, "{yyyy-MM-dd 00:00}")
                                         </td>
                                     </tr>
                                     }
@@ -59,7 +59,7 @@
                                             @Html.CheckBox("selectedDates", new { value = item.StartDateTime.ToString() + ";" + item.EndDateTime.ToString() })
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.StartDateTime) - @Html.DisplayFor(modelItem => item.EndDateTime)
+                                            @Html.DisplayFor(modelItem => item.StartDateTime, "{0:dd/MM/yyyy}") - @Html.DisplayFor(modelItem => item.EndDateTime, "{yyyy-MM-dd 00:00}")
                                         </td>
                                     </tr>
                                     }
