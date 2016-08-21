@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using MyMoridgeServer.Models;
 using MyMoridgeServer.BusinessLogic;
 
@@ -22,6 +23,20 @@ namespace MyMoridgeServer.Controllers
             Invitation i = new Invitation();
 
             return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult LogIn(string username, string password)
+        {
+            if (ModelState.IsValid)
+            {
+                if (new Login().DoLogin(username, password))
+                {
+                    FormsAuthentication.SetAuthCookie(username, true);
+                }
+            }
+
+            return RedirectToAction("Index", "home");
         }
 
         [HttpPost]

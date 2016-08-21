@@ -9,70 +9,86 @@
 </header>
 <div id="body">
     
-    @using (Html.BeginForm("SendInvitation", "Home", FormMethod.Post))
+    @if (Request.IsAuthenticated) 
     {
-        <section class="content-wrapper main-content clear-fix">
-            <h3>Gå igenom följande steg för att skicka inbjudan</h3>
-            <ol class="round">
-                <li class="one">
-                    <h5>Välj mottagare</h5>
-                    <div style="height: 400px; overflow-y:auto; overflow-x:hidden;">
-                        <table>
-                            <tr>
-                                <td></td>
-                                <td>Företag</td>
-                                <td>Email</td>
-                                <td>Reg. nummer</td>
-                                <td>Senaste bokning</td>
-                            </tr>
-                            @foreach (var item in Model.BookingLogs) {
+        using (Html.BeginForm("SendInvitation", "Home", FormMethod.Post))
+        {
+            <section class="content-wrapper main-content clear-fix">
+                <h3>Gå igenom följande steg för att skicka inbjudan</h3>
+                <ol class="round">
+                    <li class="one">
+                        <h5>Välj mottagare</h5>
+                        <div style="height: 400px; overflow-y:auto; overflow-x:hidden;">
+                            <table>
                                 <tr>
-                                    <td>
-                                        @Html.CheckBox("selectedEmails", new { value = item.CustomerEmail})
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.CompanyName)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.CustomerEmail)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.VehicleRegNo)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.StartDateTime)
-                                    </td>
+                                    <td></td>
+                                    <td>Företag</td>
+                                    <td>Email</td>
+                                    <td>Reg. nummer</td>
+                                    <td>Senaste bokning</td>
                                 </tr>
-                                }
-                        </table>
-                    </div>
-                </li>
-                <li class="two">
-                    <h5>Välj datum</h5>
-                    <div style="height: 250px; overflow-y:auto; overflow-X:hidden;">
-                        <table>
-                            @foreach (var item in Model.BookingEvents) {
-                                <tr>
-                                    <td>
-                                        @Html.CheckBox("selectedDates", new { value = item.StartDateTime.ToString() + ";" + item.EndDateTime.ToString() })
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.StartDateTime) - @Html.DisplayFor(modelItem => item.EndDateTime)
-                                    </td>
-                                </tr>
-                                }
-                        </table>
-                    </div>
-                </li>
-                <li class="three">
-                    <h5>Ange meddelande i inbjudan</h5>
-                    @Html.TextArea("body", Model.Email.BodyText, new { @style = "height: 100px" })
-                </li>
-                <li class="four">
-                    <h5>Skicka inbjudan</h5>
-                    <input type="submit" />
-                </li>
-            </ol>
-        </section>
+                                @foreach (var item in Model.BookingLogs) {
+                                    <tr>
+                                        <td>
+                                            @Html.CheckBox("selectedEmails", new { value = item.CustomerEmail})
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CompanyName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CustomerEmail)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.VehicleRegNo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.StartDateTime)
+                                        </td>
+                                    </tr>
+                                    }
+                            </table>
+                        </div>
+                    </li>
+                    <li class="two">
+                        <h5>Välj datum</h5>
+                        <div style="height: 250px; overflow-y:auto; overflow-X:hidden;">
+                            <table>
+                                @foreach (var item in Model.BookingEvents) {
+                                    <tr>
+                                        <td>
+                                            @Html.CheckBox("selectedDates", new { value = item.StartDateTime.ToString() + ";" + item.EndDateTime.ToString() })
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.StartDateTime) - @Html.DisplayFor(modelItem => item.EndDateTime)
+                                        </td>
+                                    </tr>
+                                    }
+                            </table>
+                        </div>
+                    </li>
+                    <li class="three">
+                        <h5>Ange meddelande i inbjudan</h5>
+                        @Html.TextArea("body", Model.Email.BodyText, new { @style = "height: 100px" })
+                    </li>
+                    <li class="four">
+                        <h5>Skicka inbjudan</h5>
+                        <input type="submit" />
+                    </li>
+                </ol>
+            </section>
+        }
+    }
+    else
+    {
+        <div class="content-wrapper">
+            @using (Html.BeginForm("LogIn", "Home", FormMethod.Post))
+            {
+                <div>Email</div>
+                @Html.TextBox("username")
+                <div>Lösenord</div>
+                @Html.Password("password")
+                <input type="submit" value="Logga in" />
+            }
+        </div>
     }
 </div>

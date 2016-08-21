@@ -9,7 +9,7 @@ namespace MyMoridgeServer.BusinessLogic
     public class Login
     {
         private MyMoridgeServerModelContainer1 db = new MyMoridgeServerModelContainer1();
-        private User user = null;
+        private User User = null;
 
         public Login()
         {
@@ -19,12 +19,12 @@ namespace MyMoridgeServer.BusinessLogic
         public bool DoLogin(string userName, string password)       
         {
             bool isValid = false;
-            user = db.Users.First(u => (u.UserName == userName) && (u.Password == password));
+            User = db.Users.FirstOrDefault(u => (u.UserName == userName) && (u.Password == password));
 
-            if(user != null)
+            if(User != null)
             {
                 isValid = true;
-                user.LastLogin = DateTime.Now;
+                User.LastLogin = DateTime.Now;
                 db.SaveChanges();
             }
 
