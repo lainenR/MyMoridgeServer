@@ -41,7 +41,7 @@ namespace MyMoridgeServer.BusinessLogic
 
         public void RemoveOldVouchers()
         {
-            DateTime compareDate = DateTime.Now.AddDays(-3);
+            DateTime compareDate = DateTime.Now.AddDays(-30);
 
             try
             {
