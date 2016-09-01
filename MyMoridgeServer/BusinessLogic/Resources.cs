@@ -60,7 +60,7 @@ namespace MyMoridgeServer.BusinessLogic
             TimeSpan morningStartTime = new TimeSpan(8, 0, 0);
             TimeSpan morningEndTime = new TimeSpan(12, 0, 0); 
             TimeSpan afterLunchStartTime = new TimeSpan(13, 0, 0);
-            TimeSpan afterLunchEndTime = new TimeSpan(17, 0, 0);
+            TimeSpan afterLunchEndTime = new TimeSpan(16, 0, 0);
 
             List<BookingEvent> dateList = new List<BookingEvent>();
 
