@@ -51,8 +51,8 @@ namespace MyMoridgeServer.BusinessLogic
 
             foreach (var date in Dates)
             {
-                sb.Append("<tr ><td>");
-                sb.Append("<a href=\"http://service.moridge.se/invitationbooking.aspx?v=");
+                sb.Append("<tr style=\"background-color:#fc3\"><td>");
+                sb.Append("<a style=\"display:block;color:#000;text-decoration:none\" href=\"http://service.moridge.se/invitationbooking.aspx?v=");
                 sb.Append(invitationVoucherHelper.AddVoucher(EmailLog, date).ToString());
                 sb.Append("\">").Append(GetDateText(date.StartDateTime)).Append("</a>");
                 sb.Append("</td></tr>");

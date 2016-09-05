@@ -5,70 +5,90 @@
   <title>Moridge</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
-  <body style="font-family: audimatregular, Arial">
-     <table align="center" border="1" cellpadding="0" cellspacing="0" width="100%">
-         <tr>
-           <td align="center" bgcolor="#ffcc33" style="padding: 10px 0 10px 0;">
-                <img src="http://www.moridge.se/static/img/logotype.png" alt="Moridge logo" width="60" height="60" style="display: block;" />
-          </td>
-         </tr>
-         <tr>
-          <td bgcolor="#ffffff">
-           <table border="0" cellpadding="0" cellspacing="0" width="100%">
-             <tr>
-              <td width="260" valign="top">
-               <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding: 10px 10px 10px 10px;">
-                <tr>
-                 <td>
-                    {Invitation.Body}
-                 </td>
-                </tr>
-                <tr><td>&nbsp;</td></tr>
-                <tr>
-                  <td align="center">
-                    <table border="1" cellpadding="2" cellspacing="0" width="60%" style="text-align: center; border-color: #ffcc33">
-                        <tr>
-                         <td style="padding: 5px 0 5px 0; font-weight: bold">
-                          Lediga datum
-                         </td>
-                        </tr>
-                        {Invitation.Dates}
-                      </table>                
-                 </td>
-                </tr>
-               </table>
-               <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                 <tr>
-                  <td width="65%" style="color: #000000; padding: 10px 10px 10px 10px;">
-                    Bokningen sker automatiskt när du klickar på datumet, bokningsbekräftelse skickas via email. Kontakta vår <a href="mailto:support@moridge.se">support</a> vid speciella instruktioner till föraren eller vid avbokning.   
-                  </td>
-                 </tr>
-                 <tr>
-                 </tr>
-                 <tr>
-                  <td width="65%" style="color: #000000; padding: 10px 10px 10px 10px;">
-                    Med vänliga hälsningar<br />Moridgeteamet
-                  </td>
-                 </tr>
-                </table>
-              </td>
-             </tr>
-            </table>
-          </td>
-         </tr>
-         <tr>
-          <td bgcolor="#333333">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-             <tr>      
-              <td style="color: #ffffff; font-size: 14px; padding: 10px 10px 10px 10px;">
-                 Kontakta oss på <a href="mailto:info@moridge.se" style="color: #ffffff;"><font color="#ffffff">info@moridge.se</font></a> för hjälp med däckskifte inför vintern.<br />
-                 <a href="http://www.moridge.se"><font color="#ffffff">www.moridge.se</font></a>
-              </td>
-             </tr>
-            </table>
-          </td>
-         </tr>
-    </table>
+  <body>
+      <div style="margin:0;background:#171717;font-family:helvetica,arial,sans-serif;font-size:14px;line-height:1.5">
+		<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td align="center" bgcolor="#ffcc33" style="padding:10px 0 10px 0">
+					<a href="http://www.moridge.se" target="_blank"><img src="http://www.moridge.se/static/img/logotype.png" alt="Moridge logo" width="60" height="60" border="none"></a>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#fff">
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					<tr>
+						<td valign="top">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding:0px 10px 10px 10px">
+								<tr>
+									<td>
+										<p style="max-width:600px;margin:20px auto 0;padding:0 20px;line-height:1.3">
+											
+                                            Hej,<br /><br />
+											{Invitation.Body}
+											<br /><br />Med vänliga hälsningar<br />Moridgeteamet
+										</p>
+	
+									</td>
+								</tr>
+								<tr>
+									<td align="center">
+										<table border="0" cellpadding="0" cellspacing="1" width="100%" style="max-width:600px;text-align:center;line-height:40px">
+											<thead>
+												<tr>
+													<th>
+														<h3 style="margin:0">Förslag på tider</h3>
+													</th>
+												</tr>
+											</thead>
+											<tfoot style="line-height: 1.0; font-size: 11px; text-align: left;">
+												<tr>
+													<td>
+														<p style="margin: 10px 10px 0px 10px">Bokningen sker automatiskt när du klickar på datumet, bokningsbekräftelse skickas via email. Kontakta kundtjänst vid speciella instruktioner till föraren eller vid avbokning. Eller, <a href="http://mobil.moridge.se" style="color:#069;text-decoration:none;border-bottom:dotted 1px #069" target="_blank">boka via vår webbapp</a></p>
+													</td>
+												</tr>
+											</tfoot>
+											<tbody>
+															
+												{Invitation.Dates}
+											
+											</tbody>
+										</table>
+										   
+									</td>
+								</tr>
+							</table>
+				
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table border="0" cellpadding="15" cellspacing="0" width="100%" style="color:#fff">
+					<tr style="background:#333">      
+						<td>
+							<p style="text-align:center;font-size:16px;line-height:1.5">Har du några frågor, kontakta kundtjänst; <a href="mailto:kundtjanst@moridge.se" style="color:#fff;text-decoration:none;border-bottom:dotted 1px #fff" target="_blank">kundtjanst@moridge.se</a> eller <a style="color:#fff;text-decoration:none;border-bottom:dotted 1px #fff;white-space:nowrap">019-12 33 33</a></p>
+						</td>
+					</tr>
+					<tr>      
+						<td>
+							<p style="color:#ccc;font-size:12px;line-height:1.5">Detta är ett automatiskt meddelande från Moridge AB. Du får detta meddelande för att du är registrerad som kund hos Moridge AB. Önskar du inte ta del av Moridge erbjudanden via e-post, vänligen kontakta enligt följande.</p>
+							<p style="color:#ccc;font-size:12px;line-height:1.5">
+								Moridge AB<br>
+								Tackjärnsgatan 1, 703 63 Örebro<br>
+								019-12 33 33<br>
+								<a href="mailto:info@moridge.se" style="color:#ccc" target="_blank">info@moridge.se</a><br>
+								<a href="http://www.moridge.se" style="color:#ccc" target="_blank">www.moridge.se</a>
+							</p>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	</div>
+
   </body>
 </html>
 
