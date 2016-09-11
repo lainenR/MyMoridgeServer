@@ -102,7 +102,12 @@ namespace MyMoridgeServer.BusinessLogic
 
         public List<BookingEvent> GetBookingsLastBooking()
         {
-            var log = db.BookingLogs.GroupBy(c => c.CustomerEmail).Select(x => x.FirstOrDefault());
+            var logPreSorted = db.BookingLogs.ToList().OrderBy(c => c.CustomerEmail);
+
+            var log = from l in logPreSorted
+                     group l by l.CustomerEmail into grp
+                     select grp.OrderByDescending(g => g.StartDateTime).First();
+
             List<BookingEvent> events = new List<BookingEvent>();
 
             foreach (var item in log)
