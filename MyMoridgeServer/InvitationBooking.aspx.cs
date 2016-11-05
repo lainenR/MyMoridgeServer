@@ -13,7 +13,7 @@ namespace MyMoridgeServer
     {
         private MyMoridgeServerModelContainer1 db = new MyMoridgeServerModelContainer1();
         private const string CONST_BOOKING_MESSAGE = "Moridge AB kommer under denna period att leverera tjänsten Biltvätt avseende fordonet {0}";
-        private const string CONST_BOOKING_HEADER = "Biltvätt av {0} ({1})";
+        private const string CONST_BOOKING_HEADER = "(e)Biltvätt av {0} ({1})";
 
         protected void Page_Load(object sender, EventArgs e)
         {
