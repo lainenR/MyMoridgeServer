@@ -46,8 +46,8 @@ namespace MyMoridgeServer
 
                 var bookingEvent = new BookingEvent();
 
-                bookingEvent.StartDateTime = invitationVoucher.StartDateTime.AddHours(-7); //Compensate for timedifference 
-                bookingEvent.EndDateTime = invitationVoucher.EndDateTime.AddHours(-7); //Compensate for timedifference
+                bookingEvent.StartDateTime = invitationVoucher.StartDateTime; 
+                bookingEvent.EndDateTime = invitationVoucher.EndDateTime;
                 bookingEvent.CustomerOrgNo = invitationVoucher.BookingLog.CustomerOrgNo;
                 bookingEvent.CustomerEmail = invitationVoucher.BookingLog.CustomerEmail;
                 bookingEvent.CustomerAddress = invitationVoucher.BookingLog.CustomerAddress;
