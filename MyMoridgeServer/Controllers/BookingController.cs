@@ -40,8 +40,8 @@ namespace MyMoridgeServer.Controllers
                 {
                     BookingEvent bookingEvent = new BookingEvent();
 
-                    bookingEvent.StartDateTime = Convert.ToDateTime(bookingEventDTO.StartDateTime).AddHours(6); //Compensate for timedifference between client- and serviceserver
-                    bookingEvent.EndDateTime = Convert.ToDateTime(bookingEventDTO.EndDateTime).AddHours(6); //Compensate for timedifference between client- and serviceserver;
+                    bookingEvent.StartDateTime = Convert.ToDateTime(bookingEventDTO.StartDateTime).AddHours(7); //Compensate for timedifference between client- and serviceserver
+                    bookingEvent.EndDateTime = Convert.ToDateTime(bookingEventDTO.EndDateTime).AddHours(7); //Compensate for timedifference between client- and serviceserver;
                     bookingEvent.CustomerOrgNo = bookingEventDTO.CustomerOrgNo;
                     bookingEvent.CustomerEmail = bookingEventDTO.CustomerEmail;
                     bookingEvent.CustomerAddress = bookingEventDTO.CustomerAddress;
