@@ -53,7 +53,7 @@ namespace MyMoridgeServer.BusinessLogic
         {
             var eventDateTime = new EventDateTime();
 
-            eventDateTime.DateTimeRaw = start.ToString("yyyy-MM-dd") + "T" + start.TimeOfDay.ToString() + "+01:00";
+            eventDateTime.DateTimeRaw = start.ToString("yyyy-MM-dd") + "T" + start.TimeOfDay.ToString() + GetCorrectTimeZone(start);
 
             return eventDateTime;
         }
@@ -62,7 +62,7 @@ namespace MyMoridgeServer.BusinessLogic
         {
             var eventDateTime = new EventDateTime();
 
-            eventDateTime.DateTimeRaw = end.Date.ToString("yyyy-MM-dd") + "T" + end.TimeOfDay.ToString() + "+01:00";
+            eventDateTime.DateTimeRaw = end.Date.ToString("yyyy-MM-dd") + "T" + end.TimeOfDay.ToString() + GetCorrectTimeZone(end);
 
             return eventDateTime;
         }
@@ -92,6 +92,19 @@ namespace MyMoridgeServer.BusinessLogic
             }
 
             return events;
+        }
+
+        private static string GetCorrectTimeZone(DateTime date)
+        {
+            string timezone = "+01:00";
+
+            TimeZoneInfo tst = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
+            if (tst.IsDaylightSavingTime(date))
+            {
+                timezone = "+02:00";
+            }
+
+            return timezone;
         }
     }
 }
