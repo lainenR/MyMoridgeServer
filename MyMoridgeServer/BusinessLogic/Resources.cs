@@ -54,13 +54,14 @@ namespace MyMoridgeServer.BusinessLogic
 
             var daysBeforeBooking = resource.DaysBeforeBooking;
 
-            DateTime currentStartDate = DateTime.Now.AddDays(daysBeforeBooking).ToUniversalTime().AddHours(2); //Set swedish time
+            DateTime currentStartDate = DateTime.Now.AddDays(daysBeforeBooking).ToUniversalTime();
             DateTime currentEndDate = currentStartDate;
 
-            TimeSpan morningStartTime = new TimeSpan(8, 0, 0);
-            TimeSpan morningEndTime = new TimeSpan(12, 0, 0); 
-            TimeSpan afterLunchStartTime = new TimeSpan(13, 0, 0);
-            TimeSpan afterLunchEndTime = new TimeSpan(16, 0, 0);
+            int UTCOffset = Common.GetSwedishDateTimeOffsetFromUTC(currentStartDate);
+            TimeSpan morningStartTime = new TimeSpan(8 - UTCOffset, 0, 0);
+            TimeSpan morningEndTime = new TimeSpan(12 - UTCOffset, 0, 0);
+            TimeSpan afterLunchStartTime = new TimeSpan(13 - UTCOffset, 0, 0);
+            TimeSpan afterLunchEndTime = new TimeSpan(16 - UTCOffset, 0, 0);
 
             List<BookingEvent> dateList = new List<BookingEvent>();
 
@@ -114,8 +115,29 @@ namespace MyMoridgeServer.BusinessLogic
 
         private bool IsSlotAvailable(IList<Google.Apis.Calendar.v3.Data.Event> events, DateTime startDate, DateTime endDate, int maxBookings)
         {
-            startDate = startDate.AddHours(-2); //Set UTC time 
-            endDate = endDate.AddHours(-2); //Set UTC time
+            int test = events.Count(booked =>
+                            (
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() >= startDate.ToUniversalTime() &&
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
+                            )
+                            ||
+                            (
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() <= endDate.ToUniversalTime()
+                            )
+                            ||
+                            (
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() < startDate.ToUniversalTime() &&
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() > endDate.ToUniversalTime()
+                            )
+                            ||
+                            (
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
+                            )
+                        );
+
+            int tt = test;
 
             return events.Count(booked =>
                             (
@@ -142,9 +164,6 @@ namespace MyMoridgeServer.BusinessLogic
         
         private bool IsResourceWorking(IList<Google.Apis.Calendar.v3.Data.Event> events, DateTime startDate, DateTime endDate)
         {
-            startDate = startDate.AddHours(-2); //Set UTC time 
-            endDate = endDate.AddHours(-2); //Set UTC time
-
             return (events.Count(free =>
                         (
                             (

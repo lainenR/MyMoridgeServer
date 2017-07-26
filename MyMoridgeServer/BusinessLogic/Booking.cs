@@ -65,6 +65,19 @@ namespace MyMoridgeServer.BusinessLogic
             db.SaveChanges();
         }
 
+        public List<BookingEvent> Get15AvailableDatesForBookingSwedishOffset()
+        {
+            List<BookingEvent> list = Get15AvailableDatesForBooking();
+
+            foreach (BookingEvent ev in list)
+            {
+                ev.StartDateTime = ev.StartDateTime.AddHours(Common.GetSwedishDateTimeOffsetFromUTC(ev.StartDateTime));
+                ev.EndDateTime = ev.EndDateTime.AddHours(Common.GetSwedishDateTimeOffsetFromUTC(ev.EndDateTime));
+            }
+
+            return list;
+        }
+
         public List<BookingEvent> Get15AvailableDatesForBooking()
         {
             Resources resources = new Resources();
