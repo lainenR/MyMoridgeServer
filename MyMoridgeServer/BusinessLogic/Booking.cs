@@ -17,6 +17,15 @@ namespace MyMoridgeServer.BusinessLogic
             
         }
 
+        public bool IsBookingDateAvailable(BookingEvent bookingEvent)
+        {
+            Resources resources = new Resources();
+
+            bookingEvent.ResourceId = resources.GetResourceIdAvailableForBooking(bookingEvent);
+
+            return bookingEvent.ResourceId > -1; 
+        }
+
         public void BookEvent(BookingEvent bookingEvent)
         {
             Resource resource = db.Resources.Find(bookingEvent.ResourceId);
@@ -149,8 +158,8 @@ namespace MyMoridgeServer.BusinessLogic
         {
             BookingLog log = new BookingLog();
 
-            log.StartDateTime = ev.StartDateTime;
-            log.EndDateTime = ev.EndDateTime;
+            log.StartDateTime = ev.StartDateTime.ToLocalTime();
+            log.EndDateTime = ev.EndDateTime.ToLocalTime();
             log.VehicleRegNo = ev.VehicleRegNo;
             log.CustomerAddress = ev.CustomerAddress;
             log.CustomerEmail = ev.CustomerEmail;

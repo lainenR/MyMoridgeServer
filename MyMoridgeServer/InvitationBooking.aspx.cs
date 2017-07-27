@@ -15,12 +15,19 @@ namespace MyMoridgeServer
         private const string CONST_BOOKING_MESSAGE = "Moridge AB kommer under denna period att leverera tjänsten Biltvätt avseende fordonet {0}";
         private const string CONST_BOOKING_HEADER = "(e)Biltvätt av {0} ({1})";
 
+        private enum BookingStatus
+        {
+            Success,
+            NotAvailable,
+            Error
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (DoSecurityCheck())
             {
-                var ok = DoBook();
-                RedirectUser(ok);
+                var result = DoBook();
+                RedirectUser(result);
             }
         }
 
@@ -36,7 +43,7 @@ namespace MyMoridgeServer
             return ok;
         }
 
-        private bool DoBook()
+        private BookingStatus DoBook()
         {
             try
             {
@@ -46,8 +53,12 @@ namespace MyMoridgeServer
 
                 var bookingEvent = new BookingEvent();
 
-                bookingEvent.StartDateTime = invitationVoucher.StartDateTime; 
-                bookingEvent.EndDateTime = invitationVoucher.EndDateTime;
+                TimeZone tz = TimeZone.CurrentTimeZone;
+                var offsetFromLocal = TimeZone.CurrentTimeZone.GetUtcOffset(invitationVoucher.StartDateTime);
+                var offsetFromSwedish = Common.GetSwedishDateTimeOffsetFromUTC(invitationVoucher.StartDateTime);
+
+                bookingEvent.StartDateTime = invitationVoucher.StartDateTime.AddHours(offsetFromLocal.Hours).AddHours(offsetFromSwedish * -1).ToUniversalTime(); //Go to UTC time
+                bookingEvent.EndDateTime = invitationVoucher.EndDateTime.AddHours(offsetFromLocal.Hours).AddHours(offsetFromSwedish * -1).ToUniversalTime(); //Go to UTC time
                 bookingEvent.CustomerOrgNo = invitationVoucher.BookingLog.CustomerOrgNo;
                 bookingEvent.CustomerEmail = invitationVoucher.BookingLog.CustomerEmail;
                 bookingEvent.CustomerAddress = invitationVoucher.BookingLog.CustomerAddress;
@@ -56,28 +67,46 @@ namespace MyMoridgeServer
                 bookingEvent.CompanyName = invitationVoucher.BookingLog.CompanyName;
                 bookingEvent.BookingHeader = String.Format(CONST_BOOKING_HEADER, invitationVoucher.BookingLog.VehicleRegNo, invitationVoucher.BookingLog.CompanyName);
                 bookingEvent.BookingMessage = String.Format(CONST_BOOKING_MESSAGE,  invitationVoucher.BookingLog.VehicleRegNo);
-                bookingEvent.ResourceId = invitationVoucher.BookingLog.ResourceId;
+                bookingEvent.ResourceId = 0;
                 bookingEvent.SupplierEmailAddress = invitationVoucher.BookingLog.SupplierEmailAddress;
 
                 var booking = new Booking();
-                booking.BookEvent(bookingEvent);
+                BookingStatus returnVal = BookingStatus.Error;
 
-                return true;
+                if (booking.IsBookingDateAvailable(bookingEvent))
+                {
+                    booking.BookEvent(bookingEvent);
+                    returnVal = BookingStatus.Success;
+                }
+                else
+                {
+                    returnVal = BookingStatus.NotAvailable;
+                }
+
+                return returnVal;
             }
             catch (Exception ex)
             {
                 Common.LogError(ex);
-                return false;
+                return BookingStatus.Error;
             }
         }
 
-        private void RedirectUser(bool ok)
+        private void RedirectUser(BookingStatus status)
         {
             var redirectUrl = Common.GetAppConfigValue("RedirectAfterBookingSuccess");
 
-            if (!ok)
+            switch(status)
             {
-                redirectUrl = Common.GetAppConfigValue("RedirectAfterBookingError");
+                case BookingStatus.Success:
+                    redirectUrl = Common.GetAppConfigValue("RedirectAfterBookingSuccess");
+                    break;
+                case BookingStatus.NotAvailable:
+                    redirectUrl = Common.GetAppConfigValue("RedirectAfterBookingNotAvailable");
+                    break;
+                case BookingStatus.Error:
+                    redirectUrl = Common.GetAppConfigValue("RedirectAfterBookingError");
+                    break;
             }
 
             Response.Redirect(redirectUrl);

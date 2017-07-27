@@ -35,24 +35,10 @@ namespace MyMoridgeServer.BusinessLogic
             ErrorLog log = new ErrorLog();
 
             log.DatetTimeStamp = DateTime.UtcNow;
-            log.ErrorMessage = ex.Message + ": " + ex.StackTrace.ToString();
+            log.ErrorMessage = ex.Message + ": " + ex.StackTrace ?? "";
 
             db.ErrorLogSet.Add(log);
             db.SaveChanges();
-        }
-
-
-        public static string GetSwedishDateTimeOffsetFromUTCString(DateTime date)
-        {
-            string offset = "+01:00";
-
-            TimeZoneInfo tst = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
-            if (tst.IsDaylightSavingTime(date))
-            {
-                offset = "+02:00";
-            }
-
-            return offset;
         }
 
         public static int GetSwedishDateTimeOffsetFromUTC(DateTime date)

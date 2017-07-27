@@ -181,6 +181,7 @@
     <Compile Include="BusinessLogic\InvitationVoucherHelper.cs" />
     <Compile Include="BusinessLogic\Login.cs" />
     <Compile Include="BusinessLogic\Resources.cs" />
+    <Compile Include="BusinessLogic\TimeScheduler.cs" />
     <Compile Include="CorsHandler.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="Models\Resource.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\TimeSchedule.cs" />
     <Compile Include="Models\User.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
     </Compile>
@@ -246,6 +248,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bookingerror.html" />
+    <Content Include="bookingnotavailable.html" />
     <Content Include="bookingsuccess.html" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />

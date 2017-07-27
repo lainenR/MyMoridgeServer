@@ -53,7 +53,7 @@ namespace MyMoridgeServer.BusinessLogic
         {
             var eventDateTime = new EventDateTime();
 
-            eventDateTime.DateTimeRaw = start.ToString("yyyy-MM-dd") + "T" + start.TimeOfDay.ToString() + Common.GetSwedishDateTimeOffsetFromUTCString(start);
+            eventDateTime.DateTimeRaw = start.ToString("yyyy-MM-dd") + "T" + start.TimeOfDay.ToString() + "+00:00";
 
             return eventDateTime;
         }
@@ -62,7 +62,7 @@ namespace MyMoridgeServer.BusinessLogic
         {
             var eventDateTime = new EventDateTime();
 
-            eventDateTime.DateTimeRaw = end.Date.ToString("yyyy-MM-dd") + "T" + end.TimeOfDay.ToString() + Common.GetSwedishDateTimeOffsetFromUTCString(end);
+            eventDateTime.DateTimeRaw = end.Date.ToString("yyyy-MM-dd") + "T" + end.TimeOfDay.ToString() + "+00:00";
 
             return eventDateTime;
         }

@@ -9,10 +9,58 @@ namespace MyMoridgeServer.BusinessLogic
     public class Resources
     {
         private MyMoridgeServerModelContainer1 db = new MyMoridgeServerModelContainer1();
+        private struct TimeSchedule
+        {
+            public const int MorningStartHour = 8;
+            public const int MorningEndHour = 12;
+            public const int AfterLunchStartHour = 13;
+            public const int AfterLunchEndHour = 16;
+        }
 
         public Resources()
         {
           
+        }
+
+        public int GetResourceIdAvailableForBooking(BookingEvent bookingEvent)
+        {
+            int resourceId = -1;
+
+            try
+            {
+                foreach (Resource resource in db.Resources.OrderBy(r => r.BookingPriority))
+                {
+                    GoogleCalendar googleCalendar = new GoogleCalendar(resource.CalendarEmail, resource.CalendarServiceAccountEmail);
+                    var events = GoogleCalendarHelper.HandleEventStartEndNull(googleCalendar.GetEventList(resource.CalendarEmail));
+                    var afterLunchStartHourUTC = TimeSchedule.AfterLunchStartHour - Common.GetSwedishDateTimeOffsetFromUTC(bookingEvent.StartDateTime);
+
+                    int maxBookings = 0;
+
+                    if(afterLunchStartHourUTC != bookingEvent.StartDateTime.Hour)
+                    {
+                        maxBookings = resource.MaxBookingsBeforeLunch;
+                    }
+                    else
+                    {
+                        maxBookings = resource.MaxBookingsAfterLunch;
+                    }
+
+                    
+                    bool available = IsSlotAvailable(events.Items, bookingEvent.StartDateTime, bookingEvent.EndDateTime, maxBookings);
+                    
+                    if (available)
+                    {
+                        resourceId = resource.Id;
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while trying to check if slot is available", ex);
+            }
+
+            return resourceId;
         }
 
         public List<BookingEvent> Get15AvailableDatesForBooking()
@@ -57,11 +105,11 @@ namespace MyMoridgeServer.BusinessLogic
             DateTime currentStartDate = DateTime.Now.AddDays(daysBeforeBooking).ToUniversalTime();
             DateTime currentEndDate = currentStartDate;
 
-            int UTCOffset = Common.GetSwedishDateTimeOffsetFromUTC(currentStartDate);
-            TimeSpan morningStartTime = new TimeSpan(8 - UTCOffset, 0, 0);
-            TimeSpan morningEndTime = new TimeSpan(12 - UTCOffset, 0, 0);
-            TimeSpan afterLunchStartTime = new TimeSpan(13 - UTCOffset, 0, 0);
-            TimeSpan afterLunchEndTime = new TimeSpan(16 - UTCOffset, 0, 0);
+            TimeScheduler timeScheduler = new TimeScheduler(currentStartDate);
+            TimeSpan morningStartTime = timeScheduler.GetMorningStartTimeSwedishTimeCompensateUTC();
+            TimeSpan morningEndTime = timeScheduler.GetMorningEndTimeSwedishTimeCompensateUTC();
+            TimeSpan afterLunchStartTime = timeScheduler.GetAfterLunchStartTimeSwedishTimeCompensateUTC();
+            TimeSpan afterLunchEndTime = timeScheduler.GetAfterLunchEndTimeSwedishTimeCompensateUTC();
 
             List<BookingEvent> dateList = new List<BookingEvent>();
 
@@ -115,30 +163,6 @@ namespace MyMoridgeServer.BusinessLogic
 
         private bool IsSlotAvailable(IList<Google.Apis.Calendar.v3.Data.Event> events, DateTime startDate, DateTime endDate, int maxBookings)
         {
-            int test = events.Count(booked =>
-                            (
-                                ((DateTime)booked.Start.DateTime).ToUniversalTime() >= startDate.ToUniversalTime() &&
-                                ((DateTime)booked.Start.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
-                            )
-                            ||
-                            (
-                                ((DateTime)booked.End.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
-                                ((DateTime)booked.End.DateTime).ToUniversalTime() <= endDate.ToUniversalTime()
-                            )
-                            ||
-                            (
-                                ((DateTime)booked.Start.DateTime).ToUniversalTime() < startDate.ToUniversalTime() &&
-                                ((DateTime)booked.End.DateTime).ToUniversalTime() > endDate.ToUniversalTime()
-                            )
-                            ||
-                            (
-                                ((DateTime)booked.Start.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
-                                ((DateTime)booked.End.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
-                            )
-                        );
-
-            int tt = test;
-
             return events.Count(booked =>
                             (
                                 ((DateTime)booked.Start.DateTime).ToUniversalTime() >= startDate.ToUniversalTime() &&

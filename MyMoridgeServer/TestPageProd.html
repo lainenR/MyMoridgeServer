@@ -10,7 +10,7 @@
 
          function (Data) {
              $.each(Data, function (key, val) {
-                 var str = val.StartDateTime.substring(0, 10) + ' ' + val.StartDateTime.substring(11, 16) + '  -  ' + val.EndDateTime.substring(0, 10) + ' ' + val.EndDateTime.substring(11, 16) + ' Resurs: ' + val.ResourceId;
+                 var str = val.StartDateTime.substring(0, 20) + '  -  ' + val.EndDateTime.substring(0, 20) + ' Resurs: ' + val.ResourceId;
                  $('<li/>', { text: str })
                  .appendTo($('#dates'));
              });
@@ -77,19 +77,9 @@
         }
 
         function FillData() {
-            var timeCompensation = document.getElementById('dates').textContent.substring(23, 24);
-            var dateStringStart = document.getElementById('dates').textContent.substring(11, 22);
-            var dateStringEnd = document.getElementById('dates').textContent.substring(32, 43);
-            var resourceId;
-
-            if (timeCompensation == 8) {
-                dateStringStart = dateStringStart + '00:00';
-                dateStringEnd = dateStringEnd + '04:00';
-            }
-            else {
-                dateStringStart = dateStringStart + '04:00';
-                dateStringEnd = dateStringEnd + '08:00';
-            }
+            var dateStringStart = document.getElementById('dates').textContent.substring(11, 31);
+            var dateStringEnd = document.getElementById('dates').textContent.substring(36, 56);
+            var resourceId = document.getElementById('dates').textContent.substring(65, 66);
 
             document.getElementById('txtStart').value = dateStringStart;
             document.getElementById('txtEnd').value = dateStringEnd;
@@ -99,7 +89,7 @@
             document.getElementById('txtAddress').value = 'Testgatan 1';
             document.getElementById('txtRegNo').value = 'ABC123';
             document.getElementById('txtSupplier').value = 'leverantör@test.se';
-            document.getElementById('txtResourceId').value = document.getElementById('dates').textContent.substring(57, 58);
+            document.getElementById('txtResourceId').value = resourceId;
             document.getElementById('txtBookingHeader').value = 'Testbokning';
             document.getElementById('txtBookingMessage').value = 'Detta är ett test!';
         }

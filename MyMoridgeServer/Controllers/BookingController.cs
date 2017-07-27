@@ -40,8 +40,12 @@ namespace MyMoridgeServer.Controllers
                 {
                     BookingEvent bookingEvent = new BookingEvent();
 
-                    bookingEvent.StartDateTime = Convert.ToDateTime(bookingEventDTO.StartDateTime).AddHours(7); //Compensate for timedifference between client- and serviceserver
-                    bookingEvent.EndDateTime = Convert.ToDateTime(bookingEventDTO.EndDateTime).AddHours(7); //Compensate for timedifference between client- and serviceserver;
+                    var startDateTime = Convert.ToDateTime(bookingEventDTO.StartDateTime); 
+                    var endDateTime = Convert.ToDateTime(bookingEventDTO.EndDateTime);
+                    var offsetFromSwedish = Common.GetSwedishDateTimeOffsetFromUTC(startDateTime);
+
+                    bookingEvent.StartDateTime = startDateTime.AddHours(offsetFromSwedish * -1).ToUniversalTime(); //Go to UTC time
+                    bookingEvent.EndDateTime = endDateTime.AddHours(offsetFromSwedish * -1).ToUniversalTime(); //Go to UTC time
                     bookingEvent.CustomerOrgNo = bookingEventDTO.CustomerOrgNo;
                     bookingEvent.CustomerEmail = bookingEventDTO.CustomerEmail;
                     bookingEvent.CustomerAddress = bookingEventDTO.CustomerAddress;
@@ -64,7 +68,7 @@ namespace MyMoridgeServer.Controllers
             }
             catch (Exception ex)
             {
-                Exception e = new Exception("CustomerOrgNo:" + bookingEventDTO.CustomerOrgNo ?? "", ex);
+                Exception e = new Exception(ex.Message + " - CustomerOrgNo:" + bookingEventDTO.CustomerOrgNo ?? "", ex);
 
                 Common.LogError(e);    
             }
