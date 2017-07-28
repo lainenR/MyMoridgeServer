@@ -46,7 +46,7 @@ namespace MyMoridgeServer.BusinessLogic
                     }
 
                     
-                    bool available = IsSlotAvailable(events.Items, bookingEvent.StartDateTime, bookingEvent.EndDateTime, maxBookings);
+                    bool available = IsSlotAvailable(events.Items, bookingEvent.StartDateTime, bookingEvent.EndDateTime, maxBookings, resource.DaysBeforeBooking);
                     
                     if (available)
                     {
@@ -137,7 +137,7 @@ namespace MyMoridgeServer.BusinessLogic
                         isMorningTime = true;
                     }
 
-                    if(IsSlotAvailable(events.Items, currentStartDate, currentEndDate, maxBookings) &&
+                    if(IsSlotAvailable(events.Items, currentStartDate, currentEndDate, maxBookings, daysBeforeBooking) &&
                         IsResourceWorking(events.Items, currentStartDate, currentEndDate))
                     {
                         BookingEvent bookingEvent = new BookingEvent();
@@ -161,9 +161,13 @@ namespace MyMoridgeServer.BusinessLogic
             return dateList;
         }
 
-        private bool IsSlotAvailable(IList<Google.Apis.Calendar.v3.Data.Event> events, DateTime startDate, DateTime endDate, int maxBookings)
+        private bool IsSlotAvailable(IList<Google.Apis.Calendar.v3.Data.Event> events, DateTime startDate, DateTime endDate, int maxBookings, int daysBeforeBooking)
         {
-            return events.Count(booked =>
+            var isSlotAvailable = false;
+
+            if (endDate.ToUniversalTime() > DateTime.UtcNow.AddDays(daysBeforeBooking))
+            {
+                isSlotAvailable = events.Count(booked =>
                             (
                                 ((DateTime)booked.Start.DateTime).ToUniversalTime() >= startDate.ToUniversalTime() &&
                                 ((DateTime)booked.Start.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
@@ -184,6 +188,9 @@ namespace MyMoridgeServer.BusinessLogic
                                 ((DateTime)booked.End.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
                             )
                         ) < maxBookings;
+            }
+
+            return isSlotAvailable;
         }
         
         private bool IsResourceWorking(IList<Google.Apis.Calendar.v3.Data.Event> events, DateTime startDate, DateTime endDate)
