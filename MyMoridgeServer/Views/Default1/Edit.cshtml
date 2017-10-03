@@ -1,0 +1,78 @@
+﻿@model MyMoridgeServer.Models.Product
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Product</legend>
+
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Name)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ProductInformation)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.ProductInformation)
+            @Html.ValidationMessageFor(model => model.ProductInformation)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.HoursToBook)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.HoursToBook)
+            @Html.ValidationMessageFor(model => model.HoursToBook)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DaysBeforeBooking)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.DaysBeforeBooking)
+            @Html.ValidationMessageFor(model => model.DaysBeforeBooking)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PriceExclVat)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PriceExclVat)
+            @Html.ValidationMessageFor(model => model.PriceExclVat)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PriceInclVat)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PriceInclVat)
+            @Html.ValidationMessageFor(model => model.PriceInclVat)
+        </div>
+
+        <p>
+            <input type="submit" value="Save" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -26,7 +26,7 @@ namespace MyMoridgeServer.BusinessLogic
             return bookingEvent.ResourceId > -1; 
         }
 
-        public void BookEvent(BookingEvent bookingEvent)
+        public int BookEvent(BookingEvent bookingEvent)
         {
             Resource resource = db.Resources.Find(bookingEvent.ResourceId);
 
@@ -57,26 +57,29 @@ namespace MyMoridgeServer.BusinessLogic
             List<string> emails = bookingEvent.Attendees ?? new List<string>();
             emails.Add(bookingEvent.CustomerEmail);
             emails.Add(resource.CalendarEmail);
-            emails.Add(bookingEvent.SupplierEmailAddress);
+            if (bookingEvent.SupplierEmailAddress != null) { emails.Add(bookingEvent.SupplierEmailAddress); } 
 
             var ev = GoogleCalendarHelper.GetGoogleEvent(bookingEvent);
             ev.Attendees = GoogleCalendarHelper.GetAttendees(emails);
               
             ev.Organizer = GoogleCalendarHelper.GetEventOrganizer();
 
-            ev.Start = GoogleCalendarHelper.GetEventStart(bookingEvent.StartDateTime);
-            ev.End = GoogleCalendarHelper.GetEventEnd(bookingEvent.EndDateTime);
-           
+            ev.Start = GoogleCalendarHelper.GetEventDateTime(bookingEvent.StartDateTime);
+            ev.End = GoogleCalendarHelper.GetEventDateTime(bookingEvent.EndDateTime);
+
+            var bookingLog = CreateBookingLog(bookingEvent);
+            db.BookingLogs.Add(bookingLog);
+            db.SaveChanges();
+
             GoogleCalendar calendar = new GoogleCalendar(Common.GetAppConfigValue("MoridgeOrganizerCalendarEmail"), Common.GetAppConfigValue("MoridgeMainCalendarEmail"));
             calendar.InsertEvent(ev);
 
-            db.BookingLogs.Add(GetBookingLog(bookingEvent));
-            db.SaveChanges();
+            return bookingLog.Id;
         }
 
-        public List<BookingEvent> Get15AvailableDatesForBookingSwedishOffset()
+        public List<BookingEvent> GetAvailableDatesForBookingSwedishOffset(int productId, int maxCount)
         {
-            List<BookingEvent> list = Get15AvailableDatesForBooking();
+            List<BookingEvent> list = GetAvailableDatesForBooking(productId, maxCount);
 
             foreach (BookingEvent ev in list)
             {
@@ -87,11 +90,16 @@ namespace MyMoridgeServer.BusinessLogic
             return list;
         }
 
-        public List<BookingEvent> Get15AvailableDatesForBooking()
+        public List<BookingEvent> GetAvailableDatesForBooking(int productId, int maxCount)
         {
             Resources resources = new Resources();
+            Product product = db.Products.Find(productId);
+            if (product == null)
+            {
+                throw new Exception("Product missing in database");
+            }
 
-            return resources.Get15AvailableDatesForBooking();
+            return resources.GetAvailableDatesForBooking(product, maxCount);
         }
 
         public List<BookingEvent> GetBookingsByOrganisation(string customerOrgNo)
@@ -147,6 +155,7 @@ namespace MyMoridgeServer.BusinessLogic
                 ev.BookingMessage = item.BookingMessage;
                 ev.SupplierEmailAddress = item.SupplierEmailAddress;
                 ev.CompanyName = item.CompanyName;
+                ev.ProductId = item.ProductId;
 
                 events.Add(ev);
             }
@@ -154,7 +163,14 @@ namespace MyMoridgeServer.BusinessLogic
             return events;
         }
 
-        private BookingLog GetBookingLog(BookingEvent ev)
+        public void DeleteEvent(BookingEvent bookingEvent)
+        {
+            GoogleCalendar calendar = new GoogleCalendar(Common.GetAppConfigValue("MoridgeOrganizerCalendarEmail"), Common.GetAppConfigValue("MoridgeMainCalendarEmail"));
+
+            calendar.DeleteEvent(calendar.FindGoogleEventId(bookingEvent));
+        }
+
+        private BookingLog CreateBookingLog(BookingEvent ev)
         {
             BookingLog log = new BookingLog();
 
@@ -169,6 +185,7 @@ namespace MyMoridgeServer.BusinessLogic
             log.ResourceId = ev.ResourceId;
             log.BookingHeader = ev.BookingHeader;
             log.SupplierEmailAddress = String.IsNullOrEmpty(ev.SupplierEmailAddress) ? "" : ev.SupplierEmailAddress;
+            log.ProductId = ev.ProductId;
 
             return log;
         }

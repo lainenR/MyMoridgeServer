@@ -49,20 +49,11 @@ namespace MyMoridgeServer.BusinessLogic
             return attendees;
         }
 
-        public static EventDateTime GetEventStart(DateTime start)
+        public static EventDateTime GetEventDateTime(DateTime dateTime)
         {
             var eventDateTime = new EventDateTime();
 
-            eventDateTime.DateTimeRaw = start.ToString("yyyy-MM-dd") + "T" + start.TimeOfDay.ToString() + "+00:00";
-
-            return eventDateTime;
-        }
-
-        public static EventDateTime GetEventEnd(DateTime end)
-        {
-            var eventDateTime = new EventDateTime();
-
-            eventDateTime.DateTimeRaw = end.Date.ToString("yyyy-MM-dd") + "T" + end.TimeOfDay.ToString() + "+00:00";
+            eventDateTime.DateTimeRaw = dateTime.ToString("yyyy-MM-dd") + "T" + dateTime.TimeOfDay.ToString() + "+00:00";
 
             return eventDateTime;
         }
@@ -83,11 +74,11 @@ namespace MyMoridgeServer.BusinessLogic
             {
                 if (ev.Start.DateTime == null)
                 {
-                    ev.Start.DateTime = Convert.ToDateTime(ev.Start.Date + " 00:00:00");
+                    ev.Start.DateTime = Convert.ToDateTime(ev.Start.Date + "T00:00:00+00:00");
                 }
                 if (ev.End.DateTime == null)
                 {
-                    ev.End.DateTime = Convert.ToDateTime(ev.End.Date + " 00:00:00");
+                    ev.End.DateTime = Convert.ToDateTime(ev.End.Date + "T00:00:00+00:00");
                 }
             }
 

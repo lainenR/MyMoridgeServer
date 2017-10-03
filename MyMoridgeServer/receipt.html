@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+    <div style="margin:0;background:#171717;font-family:helvetica,arial,sans-serif;font-size:14px;line-height:1.5">
+		<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td align="center" bgcolor="#ffcc33" style="padding:10px 0 10px 0">
+					<a href="http://www.moridge.se" target="_blank"><img src="http://www.moridge.se/static/img/logotype.png" alt="Moridge logo" width="60" height="60" border="none"></a>
+			</td>
+		</tr>
+		<tr>
+			<td bgcolor="#fff">
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					<tr>
+						<td valign="top">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding:10px 10px 40px 30px; text-align:left;">
+								<tr>
+									<td>
+										<p style="line-height:1.3; text-align: left">
+											
+                                            Hej!<br /><br />
+											
+                                            Tack för din bokning, du har beställt {Product.Name} och betalat {Price.Total} kr. Fordonet beräknas hämtas och lämnas inom den angivna tiden i bokningsbekräftelsen som skickats till din email.
+
+											<br /><br />Med vänliga hälsningar<br />Moridgeteamet
+										</p>
+	
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<table border="1" cellpadding="5" cellspacing="0" width="50%" style="max-width:600px;text-align:left;line-height:30px; border-collapse: collapse">
+											<thead>
+												<tr>
+                                                    <td width="70%">
+                                                        <b>Benämning</b>
+                                                    </td>
+                                                    <td>
+                                                        <b>Pris</b>
+                                                    </td>
+                                                </tr>
+											</thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        {Product.Name}
+                                                        - ID:
+                                                        {BookingLog.Id}</td>
+                                                    <td>
+                                                        {Price.InclVAT} kr
+                                                    </td>
+                                                </tr>											
+											</tbody>
+                                            <tfoot>
+												<tr style="font-weight: bold">
+                                                    <td>
+                                                        Total pris
+                                                    </td>
+                                                    <td>
+                                                        {Price.Total} kr
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        Varav moms
+                                                    </td>
+                                                    <td>
+                                                        {Price.TotalVAT} kr
+                                                    </td>
+                                                </tr>
+											</tfoot>
+										</table>
+										   
+									</td>
+								</tr>
+							</table>
+				
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table border="0" cellpadding="15" cellspacing="0" width="100%" style="color:#fff">
+					<tr style="background:#333">      
+						<td>
+							<p style="text-align:center;font-size:16px;line-height:1.5">Har du några frågor, kontakta kundtjänst; <a href="mailto:kundtjanst@moridge.se" style="color:#fff;text-decoration:none;border-bottom:dotted 1px #fff" target="_blank">kundtjanst@moridge.se</a> eller <a style="color:#fff;text-decoration:none;border-bottom:dotted 1px #fff;white-space:nowrap">019-12 33 33</a></p>
+						</td>
+					</tr>
+					<tr>      
+						<td>
+							<p style="color:#ccc;font-size:12px;line-height:1.5">
+								Moridge AB<br>
+								Nygatan 80, 702 13 Örebro<br>
+								019-12 33 33<br>
+                                556956-2365<br>
+								<a href="mailto:info@moridge.se" style="color:#ccc" target="_blank">info@moridge.se</a><br>
+								<a href="http://www.moridge.se" style="color:#ccc" target="_blank">www.moridge.se</a>
+							</p>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	</div>
+</body>
+</html>

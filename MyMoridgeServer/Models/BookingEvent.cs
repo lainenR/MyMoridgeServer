@@ -20,5 +20,6 @@ namespace MyMoridgeServer.Models
         public int ResourceId { get; set; }
         public string SupplierEmailAddress { get; set; }
         public List<string> Attendees { get; set; }
+        public int ProductId { get; set; }
     }
 }

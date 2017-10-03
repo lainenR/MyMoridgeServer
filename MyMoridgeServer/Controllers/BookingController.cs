@@ -14,9 +14,23 @@ namespace MyMoridgeServer.Controllers
         // GET api/booking
         public IEnumerable<BookingEvent> Get()
         {
-            Booking booking = new Booking();
+            return Get(1, 15);
+        }
 
-            var dates = booking.Get15AvailableDatesForBookingSwedishOffset();
+        // GET api/booking/
+        public IEnumerable<BookingEvent> Get(int productId, int maxCount)
+        {
+            Booking booking = new Booking();
+            List<BookingEvent> dates = null;
+
+            try
+            {
+                dates = booking.GetAvailableDatesForBookingSwedishOffset(productId, maxCount);
+            }
+            catch (Exception ex)
+            {
+                Common.LogError(ex);
+            }
 
             return dates;
         }
@@ -36,35 +50,10 @@ namespace MyMoridgeServer.Controllers
         {
             try
             {
-                if (bookingEventDTO != null)
-                {
-                    BookingEvent bookingEvent = new BookingEvent();
+                var bookingEvent = BookingEventBO.CreateBookingEvent(bookingEventDTO);
 
-                    var startDateTime = Convert.ToDateTime(bookingEventDTO.StartDateTime); 
-                    var endDateTime = Convert.ToDateTime(bookingEventDTO.EndDateTime);
-                    var offsetFromSwedish = Common.GetSwedishDateTimeOffsetFromUTC(startDateTime);
-
-                    bookingEvent.StartDateTime = startDateTime.AddHours(offsetFromSwedish * -1).ToUniversalTime(); //Go to UTC time
-                    bookingEvent.EndDateTime = endDateTime.AddHours(offsetFromSwedish * -1).ToUniversalTime(); //Go to UTC time
-                    bookingEvent.CustomerOrgNo = bookingEventDTO.CustomerOrgNo;
-                    bookingEvent.CustomerEmail = bookingEventDTO.CustomerEmail;
-                    bookingEvent.CustomerAddress = bookingEventDTO.CustomerAddress;
-                    bookingEvent.VehicleRegNo = bookingEventDTO.VehicleRegNo;
-                    bookingEvent.IsBooked = true;
-                    bookingEvent.CompanyName = bookingEventDTO.CompanyName;
-                    bookingEvent.BookingHeader = bookingEventDTO.BookingHeader;
-                    bookingEvent.BookingMessage = bookingEventDTO.BookingMessage;
-                    bookingEvent.ResourceId = bookingEventDTO.ResourceId;
-                    bookingEvent.SupplierEmailAddress = bookingEventDTO.SupplierEmailAddress;
-                    bookingEvent.Attendees = bookingEventDTO.Attendees;
-
-                    Booking booking = new Booking();
-                    booking.BookEvent(bookingEvent);
-                }
-                else
-                {
-                    throw new Exception("BookingEventDTO is null");
-                }
+                Booking booking = new Booking();
+                booking.BookEvent(bookingEvent);
             }
             catch (Exception ex)
             {

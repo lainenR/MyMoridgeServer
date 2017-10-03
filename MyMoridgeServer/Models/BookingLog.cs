@@ -14,6 +14,11 @@ namespace MyMoridgeServer.Models
     
     public partial class BookingLog
     {
+        public BookingLog()
+        {
+            this.Payment = new HashSet<Payment>();
+        }
+    
         public int Id { get; set; }
         public System.DateTime StartDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
@@ -26,7 +31,11 @@ namespace MyMoridgeServer.Models
         public int ResourceId { get; set; }
         public string SupplierEmailAddress { get; set; }
         public string BookingHeader { get; set; }
+        public Nullable<System.DateTime> Booked { get; set; }
+        public int ProductId { get; set; }
     
         public virtual Resource Resource { get; set; }
+        public virtual Product Product { get; set; }
+        public virtual ICollection<Payment> Payment { get; set; }
     }
 }

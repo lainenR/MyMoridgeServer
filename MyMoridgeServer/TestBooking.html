@@ -1,0 +1,210 @@
+﻿     <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title></title>
+        <style>
+        /* Always set the map height explicitly to define the size of the div
+        * element that contains the map. */
+        #map {
+        height: 100%;
+        }
+    </style>
+    </head>
+      <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+      <script>
+          $(document).ready(function () {
+              $.getJSON("api/product/",
+
+             function (Data) {
+                 $.each(Data, function (key, val) {
+                     var str = val.Id + " - " + val.Name + " - " + val.PriceExclVat + " - " + val.PriceInclVat + " - " + val.ProductInformation;
+                     $('<li/>', { text: str }).attr('id', val.Id)
+                     .appendTo($('#products'));
+                 });
+             });
+
+              $('#products').on('click', 'li', function () {
+                  var productId = $(this).attr('id');
+                  $('#chosenProductId').val(productId);
+                  $('#products li').css('font-weight', 'normal');
+                  $(this).css('font-weight', 'bold');
+                  ShowSuggestedDates(productId);
+              });
+          });
+
+          function ShowSuggestedDates(chosenProductId)
+          {
+              var nrOfSuggestedDates = 15;
+              $('#dates li').remove();
+
+              var paramData = { 'productId': chosenProductId, 'maxCount': nrOfSuggestedDates };
+              $.getJSON("api/booking/",
+                  paramData,
+
+             function (Data) {
+                 $.each(Data, function (key, val) {
+                     var str = val.StartDateTime.replace('T', ' ').substring(0, 16)
+                         + '  -  ' + val.EndDateTime.replace('T', ' ').substring(11, 16);
+                     $('<li/>', { text: str }).attr({ startDate: val.StartDateTime, endDate: val.EndDateTime, resourceId: val.ResourceId })
+                     .appendTo($('#dates'));
+                 });
+             });
+
+              $('#dates').on('click', 'li', function () {
+                  var startDate = $(this).attr('startDate');
+                  var endDate = $(this).attr('endDate');
+                  var resourceId = $(this).attr('resourceId');
+                  $('#chosenStartDate').val(startDate);
+                  $('#chosenEndDate').val(endDate);
+                  $('#chosenResourceId').val(resourceId);
+                  $('#dates li').css('font-weight', 'normal');
+                  $(this).css('font-weight', 'bold');
+              });
+          }
+      </script>
+
+        <script>
+            var autocomplete;
+
+            function initAutocomplete() {
+                // Create the autocomplete object, restricting the search to geographical
+                // location types.
+                autocomplete = new google.maps.places.Autocomplete(
+                    /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+                    {
+                        types: ['address']
+                    });
+                autocomplete.addListener('place_changed', SetAddress);
+
+            }
+
+            // Bias the autocomplete object to the user's geographical location,
+            // as supplied by the browser's 'navigator.geolocation' object.
+            function geolocate() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var geolocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        var circle = new google.maps.Circle({
+                            center: geolocation,
+                            radius: position.coords.accuracy
+                        });
+                        autocomplete.setBounds(circle.getBounds());
+                    });
+                }
+            }
+
+            function SetAddress() {
+                var place = autocomplete.getPlace().address_components;
+                var input = (document.getElementById('autocomplete'));
+                var components = {
+                    street_number: 'short_name',
+                    route: 'long_name',
+                    postal_town: 'long_name',
+                    administrative_area_level_1: 'short_name',
+                    country: 'long_name',
+                    postal_code: 'short_name'
+                };
+                var street = '', streetNumber = '', postalTown;
+
+                for (var i = 0; i < place.length; i++) {
+                    var addressType = place[i].types[0];
+                    
+                    if (components[addressType]) {
+                        if (addressType == 'route')
+                            street = place[i][components[addressType]];
+                        else if(addressType == 'street_number')
+                            streetNumber = ' ' + place[i][components[addressType]];
+                        else if(addressType == 'postal_town')
+                            postalTown = ' ' + place[i][components[addressType]];
+                    }
+                }
+                input.value = street + streetNumber;
+                $('#chosenCity').val(postalTown);
+            }
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAK4iJtdLwTkru4aweo0o8k9cKIaN9WefY&libraries=places&callback=initAutocomplete"
+            async defer></script>
+    <body>
+        <div>
+ 
+                <h4>Välj produkt</h4>
+                <ul id="products" style="cursor: pointer;"></ul>
+                <input type="text" id="chosenProductId" hidden="hidden"></input>
+                <h4>Välj datum</h4>
+                <ul id="dates" style="cursor: pointer;"></ul>
+                <input type="text" id="chosenStartDate" hidden="hidden"></input>
+                <input type="text" id="chosenEndDate" hidden="hidden"></input>
+                <input type="text" id="chosenResourceId" hidden="hidden"></input>
+            </div>
+                <h4>Information</h4>
+                <div id="locationField">
+                    Registreringsnummer:<input id="regNo" placeholder="Fordonets registeringsnummer" type="text" style="width: 300px"></input><BR />
+                    Namn:<input id="name" placeholder="För- och efternamn" type="text" style="width: 300px"></input><BR />
+                    Emailadress:<input id="email" placeholder="Email" type="text" style="width: 300px"></input><BR />
+                    Telefon:<input id="telephoneNo" placeholder="Telefonnummer" type="text" style="width: 300px"></input><BR />   
+                    Adress:<input id="autocomplete" placeholder="Hämt- och lämnadress" onFocus="geolocate()" type="text" style="width: 300px"></input>
+                    <input type="text" id="chosenCity" hidden="hidden"></input>
+
+        </div>
+        
+          
+        <h4>Välj betalningsmetod</h4>
+        <script src="https://js.braintreegateway.com/web/dropin/1.7.0/js/dropin.min.js"></script>
+        <div id="dropin-container" style="width: 300px"></div>
+          <button id="submit-button">Boka och betala</button>
+          <script>
+              var button = document.querySelector('#submit-button');
+              
+              $.getJSON('api/payment', function (clientToken) {
+                  braintree.dropin.create({
+                      authorization: clientToken,
+                      container: '#dropin-container'
+                  }, function (createErr, instance) {
+                      button.addEventListener('click', function () {
+                          instance.requestPaymentMethod(function (err, payload) {
+                              // Submit payload.nonce to your server
+                              var bookingEvent = {
+                                  'StartDateTime': $('#chosenStartDate').val(),
+                                  'EndDateTime': $('#chosenEndDate').val(),
+                                  'CompanyName': $('#name').val(),
+                                  'CustomerOrgNo': $('#regNo').val() + '-' + $('#telephoneNo').val(),
+                                  'CustomerEmail': $('#email').val(),
+                                  'CustomerAddress': $('#autocomplete').val(),
+                                  'VehicleRegNo': $('#regNo').val(),
+                                  'IsBooked': 1,
+                                  'SupplierEmailAddress': '',
+                                  'ResourceId': $('#chosenResourceId').val(),
+                                  'BookingHeader': '',
+                                  'BookingMessage': '',
+                                  'Attendees': '',
+                                  'ProductId': $('#chosenProductId').val()
+                              };
+                              
+                              var bookingEventPayment = {
+                                  'BookingEventDTO': bookingEvent,
+                                  'PaymentMethodNonce': payload.nonce
+                              };
+                              
+                              if ($('#chosenCity').val().trim().toLowerCase() != 'örebro') {
+                                  alert('Tyvärr kan vi endast leverera inom Örebro för tillfället');
+                              }
+                              else {
+                                  $.ajax({
+                                      type: "POST",
+                                      url: 'api/payment/',
+                                      dataType: "json",
+                                      data: bookingEventPayment,
+                                      success: function () { alert('Tack för din bokning\nBekräftelse är skickad till din email'); },
+                                      error: function (jqXHR, exception) { alert('Ett fel har uppstått:' + exception); }
+                                  })
+                              }
+                          });
+                      });
+                  });
+              });
+          </script>
+    </body>
+    </html>

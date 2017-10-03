@@ -13,13 +13,14 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MyMoridgeServer</RootNamespace>
     <AssemblyName>MyMoridgeServer</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,6 +30,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,8 +39,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Braintree">
+      <HintPath>..\packages\Braintree.3.8.0\lib\net452\Braintree.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Apis">
       <HintPath>..\packages\Google.Apis.1.8.1\lib\net40\Google.Apis.dll</HintPath>
     </Reference>
@@ -76,6 +82,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO">
@@ -107,14 +114,13 @@
     <Reference Include="System.Threading.Tasks">
       <HintPath>..\packages\Microsoft.Bcl.1.1.7\lib\net40\System.Threading.Tasks.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -161,6 +167,7 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.1.0\lib\WebGrease.dll</HintPath>
@@ -175,13 +182,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="BusinessLogic\BookingEventBO.cs" />
+    <Compile Include="BusinessLogic\BraintreeConfiguration.cs" />
+    <Compile Include="BusinessLogic\Charge.cs" />
     <Compile Include="BusinessLogic\GoogleCalendarHelper.cs" />
+    <Compile Include="BusinessLogic\IBraintreeConfiguration.cs" />
     <Compile Include="BusinessLogic\Invitation.cs" />
     <Compile Include="BusinessLogic\InvitationMessage.cs" />
     <Compile Include="BusinessLogic\InvitationVoucherHelper.cs" />
     <Compile Include="BusinessLogic\Login.cs" />
+    <Compile Include="BusinessLogic\Receipt.cs" />
     <Compile Include="BusinessLogic\Resources.cs" />
     <Compile Include="BusinessLogic\TimeScheduler.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="CorsHandler.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -205,9 +219,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\BookingEventPaymentDTO.cs" />
     <Compile Include="Models\BookingLog.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\BookingSlot.cs" />
     <Compile Include="Models\CustomerVehicle.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
     </Compile>
@@ -236,6 +252,17 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MyMoridgeServerModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MyMoridgeServerModel1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Payment.cs">
+      <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Product.cs">
+      <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Resource.cs">
       <DependentUpon>MyMoridgeServerModel.tt</DependentUpon>
@@ -307,6 +334,8 @@
     <Content Include="Images\logotype.png" />
     <Content Include="invitation.html" />
     <Content Include="InvitationBooking.aspx" />
+    <Content Include="receipt.html" />
+    <Content Include="TestBooking.html" />
     <Content Include="TestPageProd.html" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -326,7 +355,7 @@
     <Content Include="Models\MyMoridgeServerModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>MyMoridgeServerModel.edmx</DependentUpon>
-      <LastGenOutput>MyMoridgeServerModel.cs</LastGenOutput>
+      <LastGenOutput>MyMoridgeServerModel1.cs</LastGenOutput>
     </Content>
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
@@ -373,6 +402,16 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Default1\Index.cshtml" />
+    <Content Include="Views\Default1\Details.cshtml" />
+    <Content Include="Views\Default1\Create.cshtml" />
+    <Content Include="Views\Default1\Edit.cshtml" />
+    <Content Include="Views\Default1\Delete.cshtml" />
+    <Content Include="Views\Product\Index.cshtml" />
+    <Content Include="Views\Product\Details.cshtml" />
+    <Content Include="Views\Product\Create.cshtml" />
+    <Content Include="Views\Product\Edit.cshtml" />
+    <Content Include="Views\Product\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

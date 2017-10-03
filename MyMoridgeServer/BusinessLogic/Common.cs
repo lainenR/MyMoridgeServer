@@ -53,5 +53,10 @@ namespace MyMoridgeServer.BusinessLogic
 
             return offset;
         }
+
+        public static bool ContainsAllItems(List<string> a, List<string> b)
+        {
+            return !b.Except(a).Any();
+        }
     }
 }

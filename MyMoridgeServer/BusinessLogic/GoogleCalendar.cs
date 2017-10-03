@@ -50,13 +50,13 @@ namespace MyMoridgeServer.BusinessLogic
             }
         }
 
-        public Events GetEventList(string calendarEmail)
+        public Events GetEventList()
         {
             try
             {
                 CreateGoogleService();
 
-                EventsResource.ListRequest request = GoogleService.Events.List(calendarEmail);
+                EventsResource.ListRequest request = GoogleService.Events.List(CalendarEmail);
                 request.TimeMin = DateTime.Now.AddDays(-1);
                 request.TimeMax = DateTime.Now.AddMonths(3);
                 request.ShowDeleted = false;
@@ -87,11 +87,67 @@ namespace MyMoridgeServer.BusinessLogic
             }
         }
 
+        public string FindGoogleEventId(BookingEvent bookingEvent)
+        {
+            string id ="";
+            Events events = GetEventList();
+
+            var ev = events.Items.Single(e => Compare(e, bookingEvent));
+
+            if(ev != null)
+            {
+                id = ev.Id;
+            }
+
+            return id;
+        }
+
+        private bool Compare(Event ev, BookingEvent b)
+        {
+            if (!(((DateTime)ev.Start.DateTime).ToUniversalTime() == b.StartDateTime.ToUniversalTime() &&
+                                ((DateTime)ev.End.DateTime).ToUniversalTime() == b.EndDateTime.ToUniversalTime()))
+            {
+                return false;
+            }
+
+            foreach(var email in ev.Attendees.Select(e => e.Email))
+            {
+                var present = false;
+
+                foreach (var bookedEmail in b.Attendees)
+                {
+                    if (email.ToLower() == bookedEmail.ToLower())
+                    {
+                        present = true;
+                        break;
+                    }
+                }
+
+                if (!present)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public void DeleteEvent(string eventId)
         {
-            CreateGoogleService();
+            try
+            {
+                CreateGoogleService();
 
-            GoogleService.Events.Delete(CalendarEmail, eventId).Execute();
+                var deleteRequest = new EventsResource.DeleteRequest(GoogleService, CalendarEmail, eventId);
+
+                deleteRequest.SendNotifications = true;
+
+                deleteRequest.Execute();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error deleting event at Google: " + e.Message, e);
+            }
         }
 
         //Service account

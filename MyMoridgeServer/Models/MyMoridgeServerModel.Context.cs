@@ -32,5 +32,7 @@ namespace MyMoridgeServer.Models
         public DbSet<User> Users { get; set; }
         public DbSet<EmailLog> EmailLogs { get; set; }
         public DbSet<InvitationVoucher> InvitationVouchers { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Payment> Payments { get; set; }
     }
 }

@@ -10,7 +10,7 @@
 
          function (Data) {
              $.each(Data, function (key, val) {
-                 var str = val.StartDateTime.substring(0, 20)  + '  -  ' + val.EndDateTime.substring(0, 20) + ' Resurs: ' + val.ResourceId;
+                 var str = val.StartDateTime  + '  -  ' + val.EndDateTime + ' Resurs: ' + val.ResourceId;
                  $('<li/>', { text: str })
                  .appendTo($('#dates'));
              });

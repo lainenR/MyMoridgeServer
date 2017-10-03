@@ -51,8 +51,18 @@ namespace MyMoridgeServer
 
                 var invitationVoucher = db.InvitationVouchers.Find(voucher);
 
-                var bookingEvent = new BookingEvent();
+                var offsetFromLocal = TimeZone.CurrentTimeZone.GetUtcOffset(invitationVoucher.StartDateTime);
+                var startDateTime = invitationVoucher.StartDateTime.AddHours(offsetFromLocal.Hours);
+                var endDateTime = invitationVoucher.EndDateTime.AddHours(offsetFromLocal.Hours);
 
+                var bookingEvent = BookingEventBO.CreateBookingEvent(startDateTime, endDateTime, invitationVoucher.BookingLog.CustomerOrgNo,
+                    invitationVoucher.BookingLog.CustomerEmail, invitationVoucher.BookingLog.CustomerAddress, invitationVoucher.BookingLog.VehicleRegNo,
+                    true, invitationVoucher.BookingLog.CompanyName,
+                    String.Format(CONST_BOOKING_HEADER, invitationVoucher.BookingLog.VehicleRegNo, invitationVoucher.BookingLog.CompanyName),
+                    String.Format(CONST_BOOKING_MESSAGE, invitationVoucher.BookingLog.VehicleRegNo), 0, invitationVoucher.BookingLog.SupplierEmailAddress, null, 0);
+
+
+                /*
                 TimeZone tz = TimeZone.CurrentTimeZone;
                 var offsetFromLocal = TimeZone.CurrentTimeZone.GetUtcOffset(invitationVoucher.StartDateTime);
                 var offsetFromSwedish = Common.GetSwedishDateTimeOffsetFromUTC(invitationVoucher.StartDateTime);
@@ -69,7 +79,8 @@ namespace MyMoridgeServer
                 bookingEvent.BookingMessage = String.Format(CONST_BOOKING_MESSAGE,  invitationVoucher.BookingLog.VehicleRegNo);
                 bookingEvent.ResourceId = 0;
                 bookingEvent.SupplierEmailAddress = invitationVoucher.BookingLog.SupplierEmailAddress;
-
+                */
+                 
                 var booking = new Booking();
                 BookingStatus returnVal = BookingStatus.Error;
 

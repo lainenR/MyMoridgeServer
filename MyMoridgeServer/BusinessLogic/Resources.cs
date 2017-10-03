@@ -9,13 +9,6 @@ namespace MyMoridgeServer.BusinessLogic
     public class Resources
     {
         private MyMoridgeServerModelContainer1 db = new MyMoridgeServerModelContainer1();
-        private struct TimeSchedule
-        {
-            public const int MorningStartHour = 8;
-            public const int MorningEndHour = 12;
-            public const int AfterLunchStartHour = 13;
-            public const int AfterLunchEndHour = 16;
-        }
 
         public Resources()
         {
@@ -31,22 +24,16 @@ namespace MyMoridgeServer.BusinessLogic
                 foreach (Resource resource in db.Resources.OrderBy(r => r.BookingPriority))
                 {
                     GoogleCalendar googleCalendar = new GoogleCalendar(resource.CalendarEmail, resource.CalendarServiceAccountEmail);
-                    var events = GoogleCalendarHelper.HandleEventStartEndNull(googleCalendar.GetEventList(resource.CalendarEmail));
+                    var events = GoogleCalendarHelper.HandleEventStartEndNull(googleCalendar.GetEventList());
                     var afterLunchStartHourUTC = TimeSchedule.AfterLunchStartHour - Common.GetSwedishDateTimeOffsetFromUTC(bookingEvent.StartDateTime);
 
-                    int maxBookings = 0;
-
-                    if(afterLunchStartHourUTC != bookingEvent.StartDateTime.Hour)
-                    {
-                        maxBookings = resource.MaxBookingsBeforeLunch;
-                    }
-                    else
-                    {
-                        maxBookings = resource.MaxBookingsAfterLunch;
-                    }
-
+                    BookingSlot bookingSlot = new BookingSlot(
+                        bookingEvent.StartDateTime, 
+                        bookingEvent.EndDateTime,
+                        afterLunchStartHourUTC != bookingEvent.StartDateTime.Hour ? resource.MaxBookingsBeforeLunch : resource.MaxBookingsAfterLunch,
+                        afterLunchStartHourUTC != bookingEvent.StartDateTime.Hour ? true : false);
                     
-                    bool available = IsSlotAvailable(events.Items, bookingEvent.StartDateTime, bookingEvent.EndDateTime, maxBookings, resource.DaysBeforeBooking);
+                    bool available = IsSlotAvailable(events.Items, bookingSlot, resource.DaysBeforeBooking);
                     
                     if (available)
                     {
@@ -63,15 +50,15 @@ namespace MyMoridgeServer.BusinessLogic
             return resourceId;
         }
 
-        public List<BookingEvent> Get15AvailableDatesForBooking()
+        public List<BookingEvent> GetAvailableDatesForBooking(Product product, int maxCount = 15)
         {
             List<BookingEvent> main = new List<BookingEvent>();
 
             try
             {
                 foreach (Resource resource in db.Resources.OrderBy(r => r.BookingPriority))
-                {                    
-                    List<BookingEvent> list = Get15AvailableDatesForBooking(resource);
+                {
+                    List<BookingEvent> list = GetAvailableDatesForBooking(resource, product, maxCount);
                     var newItems = list.Where(x => !main.Any(y => x.StartDateTime == y.StartDateTime));
                     foreach (var item in newItems)
                     {
@@ -92,62 +79,90 @@ namespace MyMoridgeServer.BusinessLogic
             return main.OrderBy(x => x.StartDateTime).Take(15).ToList();
         }
 
-        private List<BookingEvent> Get15AvailableDatesForBooking(Resource resource)
+        private List<BookingEvent> GetAvailableDatesForBooking(Resource resource, Product product, int maxCount)
         {
             GoogleCalendar googleCalendar = new GoogleCalendar(resource.CalendarEmail, resource.CalendarServiceAccountEmail);
-            var events = GoogleCalendarHelper.HandleEventStartEndNull(googleCalendar.GetEventList(resource.CalendarEmail));
-
-            //Debugging purpose
-            //googleCalendar.DeleteEvent(Common.GetAppConfigValue(resource.CalendarEmail), "7dfntteacvfore0o5qdivp2g28");
-
-            var daysBeforeBooking = resource.DaysBeforeBooking;
+            var events = GoogleCalendarHelper.HandleEventStartEndNull(googleCalendar.GetEventList());
+            var daysBeforeBooking = GetDaysBeforeBooking(resource, product);
 
             DateTime currentStartDate = DateTime.Now.AddDays(daysBeforeBooking).ToUniversalTime();
             DateTime currentEndDate = currentStartDate;
 
             TimeScheduler timeScheduler = new TimeScheduler(currentStartDate);
-            TimeSpan morningStartTime = timeScheduler.GetMorningStartTimeSwedishTimeCompensateUTC();
-            TimeSpan morningEndTime = timeScheduler.GetMorningEndTimeSwedishTimeCompensateUTC();
-            TimeSpan afterLunchStartTime = timeScheduler.GetAfterLunchStartTimeSwedishTimeCompensateUTC();
-            TimeSpan afterLunchEndTime = timeScheduler.GetAfterLunchEndTimeSwedishTimeCompensateUTC();
-
             List<BookingEvent> dateList = new List<BookingEvent>();
 
             bool isMorningTime = true;
-            int maxBookings = 0;
-            int maxBookingsBeforeLunch = resource.MaxBookingsBeforeLunch;
-            int maxBookingsAfterLunch = resource.MaxBookingsAfterLunch;
-
-            while (dateList.Count < 15)
+      
+            while (dateList.Count < maxCount)
             {
                 if (currentStartDate.DayOfWeek != DayOfWeek.Saturday && currentStartDate.DayOfWeek != DayOfWeek.Sunday)
                 {
-                    if (isMorningTime)
+                    if (product.HoursToBook > 4)
                     {
-                        currentStartDate = currentStartDate.Date + morningStartTime;
-                        currentEndDate = currentEndDate.Date + morningEndTime;
-                        maxBookings = maxBookingsBeforeLunch;
-                        isMorningTime = false;
+                        BookingSlot morningSlot = new BookingSlot(
+                                currentStartDate.Date + timeScheduler.GetMorningStartTimeSwedishTimeCompensateUTC(),
+                                currentEndDate.Date + timeScheduler.GetMorningEndTimeSwedishTimeCompensateUTC(),
+                                resource.MaxBookingsBeforeLunch,
+                                true);
+
+                        BookingSlot afterLunchSlot = new BookingSlot(
+                                currentStartDate.Date + timeScheduler.GetAfterLunchStartTimeSwedishTimeCompensateUTC(),
+                                currentEndDate.Date + timeScheduler.GetAfterLunchEndTimeSwedishTimeCompensateUTC(),
+                                resource.MaxBookingsAfterLunch,
+                                false);
+
+                        if (IsSlotAvailable(events.Items, morningSlot, daysBeforeBooking) &&
+                            IsResourceWorking(events.Items, morningSlot) &&
+                            IsSlotAvailable(events.Items, afterLunchSlot, daysBeforeBooking) &&
+                            IsResourceWorking(events.Items, afterLunchSlot))
+                        {
+                            BookingEvent bookingEvent = new BookingEvent();
+
+                            bookingEvent.IsBooked = false;
+                            bookingEvent.StartDateTime = morningSlot.StartDateTime;
+                            bookingEvent.EndDateTime = afterLunchSlot.EndDateTime;
+                            bookingEvent.ResourceId = resource.Id;
+
+                            dateList.Add(bookingEvent);
+                        }   
                     }
                     else
                     {
-                        currentStartDate = currentStartDate.Date + afterLunchStartTime;
-                        currentEndDate = currentEndDate.Date + afterLunchEndTime;
-                        maxBookings = maxBookingsAfterLunch;
-                        isMorningTime = true;
-                    }
+                        BookingSlot bookingSlot;
 
-                    if(IsSlotAvailable(events.Items, currentStartDate, currentEndDate, maxBookings, daysBeforeBooking) &&
-                        IsResourceWorking(events.Items, currentStartDate, currentEndDate))
-                    {
-                        BookingEvent bookingEvent = new BookingEvent();
+                        if (isMorningTime)
+                        {
+                            bookingSlot = new BookingSlot(
+                                currentStartDate.Date + timeScheduler.GetMorningStartTimeSwedishTimeCompensateUTC(),
+                                currentEndDate.Date + timeScheduler.GetMorningEndTimeSwedishTimeCompensateUTC(),
+                                resource.MaxBookingsBeforeLunch,
+                                true);
 
-                        bookingEvent.IsBooked = false;
-                        bookingEvent.StartDateTime = currentStartDate;
-                        bookingEvent.EndDateTime = currentEndDate;
-                        bookingEvent.ResourceId = resource.Id;
+                            isMorningTime = false;
+                        }
+                        else
+                        {
+                            bookingSlot = new BookingSlot(
+                                currentStartDate.Date + timeScheduler.GetAfterLunchStartTimeSwedishTimeCompensateUTC(),
+                                currentEndDate.Date + timeScheduler.GetAfterLunchEndTimeSwedishTimeCompensateUTC(),
+                                resource.MaxBookingsAfterLunch,
+                                false);
 
-                        dateList.Add(bookingEvent);
+                            isMorningTime = true;
+                        }
+
+                        if (IsSlotAvailable(events.Items, bookingSlot, daysBeforeBooking) &&
+                            IsResourceWorking(events.Items, bookingSlot))
+                        {
+                            BookingEvent bookingEvent = new BookingEvent();
+
+                            bookingEvent.IsBooked = false;
+                            bookingEvent.StartDateTime = bookingSlot.StartDateTime;
+                            bookingEvent.EndDateTime = bookingSlot.EndDateTime;
+                            bookingEvent.ResourceId = resource.Id;
+
+                            dateList.Add(bookingEvent);
+                        }
                     }
                 }
 
@@ -161,64 +176,69 @@ namespace MyMoridgeServer.BusinessLogic
             return dateList;
         }
 
-        private bool IsSlotAvailable(IList<Google.Apis.Calendar.v3.Data.Event> events, DateTime startDate, DateTime endDate, int maxBookings, int daysBeforeBooking)
+        private bool IsSlotAvailable(IList<Google.Apis.Calendar.v3.Data.Event> events, BookingSlot bookingSlot, int daysBeforeBooking)
         {
             var isSlotAvailable = false;
 
-            if (endDate.ToUniversalTime() > DateTime.UtcNow.AddDays(daysBeforeBooking))
+            if (bookingSlot.EndDateTime.ToUniversalTime() > DateTime.UtcNow.AddDays(daysBeforeBooking))
             {
                 isSlotAvailable = events.Count(booked =>
                             (
-                                ((DateTime)booked.Start.DateTime).ToUniversalTime() >= startDate.ToUniversalTime() &&
-                                ((DateTime)booked.Start.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() >= bookingSlot.StartDateTime.ToUniversalTime() &&
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() < bookingSlot.EndDateTime.ToUniversalTime()
                             )
                             ||
                             (
-                                ((DateTime)booked.End.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
-                                ((DateTime)booked.End.DateTime).ToUniversalTime() <= endDate.ToUniversalTime()
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() > bookingSlot.StartDateTime.ToUniversalTime() &&
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() <= bookingSlot.EndDateTime.ToUniversalTime()
                             )
                             ||
                             (
-                                ((DateTime)booked.Start.DateTime).ToUniversalTime() < startDate.ToUniversalTime() &&
-                                ((DateTime)booked.End.DateTime).ToUniversalTime() > endDate.ToUniversalTime()
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() < bookingSlot.StartDateTime.ToUniversalTime() &&
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() > bookingSlot.EndDateTime.ToUniversalTime()
                             )
                             ||
                             (
-                                ((DateTime)booked.Start.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
-                                ((DateTime)booked.End.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
+                                ((DateTime)booked.Start.DateTime).ToUniversalTime() > bookingSlot.StartDateTime.ToUniversalTime() &&
+                                ((DateTime)booked.End.DateTime).ToUniversalTime() < bookingSlot.EndDateTime.ToUniversalTime()
                             )
-                        ) < maxBookings;
+                        ) < bookingSlot.MaxBookings;
             }
 
             return isSlotAvailable;
         }
         
-        private bool IsResourceWorking(IList<Google.Apis.Calendar.v3.Data.Event> events, DateTime startDate, DateTime endDate)
+        private bool IsResourceWorking(IList<Google.Apis.Calendar.v3.Data.Event> events, BookingSlot bookingSlot)
         {
             return (events.Count(free =>
                         (
                             (
-                                ((DateTime)free.Start.DateTime).ToUniversalTime() >= startDate.ToUniversalTime() &&
-                                ((DateTime)free.Start.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
+                                ((DateTime)free.Start.DateTime).ToUniversalTime() >= bookingSlot.StartDateTime.ToUniversalTime() &&
+                                ((DateTime)free.Start.DateTime).ToUniversalTime() < bookingSlot.EndDateTime.ToUniversalTime()
                              )
                              ||
                              (
-                                ((DateTime)free.End.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
-                                ((DateTime)free.End.DateTime).ToUniversalTime() <= endDate.ToUniversalTime()
+                                ((DateTime)free.End.DateTime).ToUniversalTime() > bookingSlot.StartDateTime.ToUniversalTime() &&
+                                ((DateTime)free.End.DateTime).ToUniversalTime() <= bookingSlot.EndDateTime.ToUniversalTime()
                              )
                              ||
                              (
-                                ((DateTime)free.Start.DateTime).ToUniversalTime() < startDate.ToUniversalTime() &&
-                                ((DateTime)free.End.DateTime).ToUniversalTime() > endDate.ToUniversalTime()
+                                ((DateTime)free.Start.DateTime).ToUniversalTime() < bookingSlot.StartDateTime.ToUniversalTime() &&
+                                ((DateTime)free.End.DateTime).ToUniversalTime() > bookingSlot.EndDateTime.ToUniversalTime()
                              )
                              ||
                              (
-                                ((DateTime)free.Start.DateTime).ToUniversalTime() > startDate.ToUniversalTime() &&
-                                ((DateTime)free.End.DateTime).ToUniversalTime() < endDate.ToUniversalTime()
+                                ((DateTime)free.Start.DateTime).ToUniversalTime() > bookingSlot.StartDateTime.ToUniversalTime() &&
+                                ((DateTime)free.End.DateTime).ToUniversalTime() < bookingSlot.EndDateTime.ToUniversalTime()
                              )
                         )
                         &&
                         free.Summary.ToLower().StartsWith("ledig")) == 0);
+        }
+
+        private int GetDaysBeforeBooking(Resource currentResource, Product currentProduct)
+        {
+            return currentResource.DaysBeforeBooking > currentProduct.DaysBeforeBooking ? currentResource.DaysBeforeBooking : currentProduct.DaysBeforeBooking;
         }
     }
 }

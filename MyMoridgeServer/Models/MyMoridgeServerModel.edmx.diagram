@@ -7,7 +7,7 @@
       <Diagram DiagramId="3da784305e6b49deb9f2c6d8b4f5de18" Name="Diagram1" >
         <EntityTypeShape EntityType="MyMoridgeServerModel.CustomerVehicle" Width="1.5" PointX="3.125" PointY="2.375" />
         <EntityTypeShape EntityType="MyMoridgeServerModel.ErrorLog" Width="1.5" PointX="1.25" PointY="2" />
-        <EntityTypeShape EntityType="MyMoridgeServerModel.BookingLog" Width="1.5" PointX="7.625" PointY="2.375" />
+        <EntityTypeShape EntityType="MyMoridgeServerModel.BookingLog" Width="1.5" PointX="8.125" PointY="3.125" />
         <EntityTypeShape EntityType="MyMoridgeServerModel.Resource" Width="1.5" PointX="10.875" PointY="3.375" />
         <AssociationConnector Association="MyMoridgeServerModel.BookingLogResource" />
         <EntityTypeShape EntityType="MyMoridgeServerModel.User" Width="1.5" PointX="1.25" PointY="4.125" />
@@ -15,6 +15,10 @@
         <EntityTypeShape EntityType="MyMoridgeServerModel.InvitationVoucher" Width="1.5" PointX="5.5" PointY="2.25" />
         <AssociationConnector Association="MyMoridgeServerModel.BookingLogInvitationVoucher" />
         <AssociationConnector Association="MyMoridgeServerModel.EmailLogInvitationVoucher" />
+        <EntityTypeShape EntityType="MyMoridgeServerModel.Product" Width="1.5" PointX="9.625" PointY="0.5" />
+        <AssociationConnector Association="MyMoridgeServerModel.ProductBookingLog" />
+        <EntityTypeShape EntityType="MyMoridgeServerModel.Payment" Width="1.5" PointX="7" PointY="0.5" />
+        <AssociationConnector Association="MyMoridgeServerModel.BookingLogPayment" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

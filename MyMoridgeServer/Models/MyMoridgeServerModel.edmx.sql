@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, and Azure
 -- --------------------------------------------------
--- Date Created: 08/18/2016 22:07:02
+-- Date Created: 08/30/2017 15:30:30
 -- Generated from EDMX file: C:\Users\krevay\documents\visual studio 2012\Projects\MyMoridgeServer\MyMoridgeServer\Models\MyMoridgeServerModel.edmx
 -- --------------------------------------------------
 
@@ -22,6 +22,15 @@ IF OBJECT_ID(N'[dbo].[FK_BookingLogResource]', 'F') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[FK_BookingLogInvitationVoucher]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[InvitationVouchers] DROP CONSTRAINT [FK_BookingLogInvitationVoucher];
+GO
+IF OBJECT_ID(N'[dbo].[FK_EmailLogInvitationVoucher]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[InvitationVouchers] DROP CONSTRAINT [FK_EmailLogInvitationVoucher];
+GO
+IF OBJECT_ID(N'[dbo].[FK_ProductBookingLog]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[BookingLogs] DROP CONSTRAINT [FK_ProductBookingLog];
+GO
+IF OBJECT_ID(N'[dbo].[FK_BookingLogPayment]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Payments] DROP CONSTRAINT [FK_BookingLogPayment];
 GO
 
 -- --------------------------------------------------
@@ -48,6 +57,12 @@ IF OBJECT_ID(N'[dbo].[EmailLogs]', 'U') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[InvitationVouchers]', 'U') IS NOT NULL
     DROP TABLE [dbo].[InvitationVouchers];
+GO
+IF OBJECT_ID(N'[dbo].[Products]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Products];
+GO
+IF OBJECT_ID(N'[dbo].[Payments]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Payments];
 GO
 
 -- --------------------------------------------------
@@ -82,7 +97,9 @@ CREATE TABLE [dbo].[BookingLogs] (
     [BookingMessage] nvarchar(max)  NULL,
     [ResourceId] int  NOT NULL,
     [SupplierEmailAddress] nvarchar(100)  NOT NULL,
-    [BookingHeader] nvarchar(max)  NOT NULL
+    [BookingHeader] nvarchar(max)  NOT NULL,
+    [Booked] datetime  NULL,
+    [ProductId] int  NOT NULL
 );
 GO
 
@@ -125,6 +142,30 @@ CREATE TABLE [dbo].[InvitationVouchers] (
     [StartDateTime] datetime  NOT NULL,
     [EndDateTime] datetime  NOT NULL,
     [EmailLogId] int  NOT NULL
+);
+GO
+
+-- Creating table 'Products'
+CREATE TABLE [dbo].[Products] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [Name] nvarchar(max)  NOT NULL,
+    [ProductInformation] nvarchar(max)  NOT NULL,
+    [HoursToBook] int  NOT NULL,
+    [DaysBeforeBooking] int  NOT NULL,
+    [PriceExclVat] int  NOT NULL,
+    [PriceInclVat] int  NOT NULL
+);
+GO
+
+-- Creating table 'Payments'
+CREATE TABLE [dbo].[Payments] (
+    [TransId] nvarchar(100)  NOT NULL,
+    [TransType] nvarchar(max)  NOT NULL,
+    [Amount] decimal(18,0)  NOT NULL,
+    [Status] nvarchar(max)  NOT NULL,
+    [Created] datetime  NOT NULL,
+    [PaymentInstrumentType] nvarchar(max)  NOT NULL,
+    [BookingLogId] int  NOT NULL
 );
 GO
 
@@ -174,6 +215,18 @@ ADD CONSTRAINT [PK_InvitationVouchers]
     PRIMARY KEY CLUSTERED ([VoucherId] ASC);
 GO
 
+-- Creating primary key on [Id] in table 'Products'
+ALTER TABLE [dbo].[Products]
+ADD CONSTRAINT [PK_Products]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [TransId] in table 'Payments'
+ALTER TABLE [dbo].[Payments]
+ADD CONSTRAINT [PK_Payments]
+    PRIMARY KEY CLUSTERED ([TransId] ASC);
+GO
+
 -- --------------------------------------------------
 -- Creating all FOREIGN KEY constraints
 -- --------------------------------------------------
@@ -218,6 +271,34 @@ ADD CONSTRAINT [FK_EmailLogInvitationVoucher]
 CREATE INDEX [IX_FK_EmailLogInvitationVoucher]
 ON [dbo].[InvitationVouchers]
     ([EmailLogId]);
+GO
+
+-- Creating foreign key on [ProductId] in table 'BookingLogs'
+ALTER TABLE [dbo].[BookingLogs]
+ADD CONSTRAINT [FK_ProductBookingLog]
+    FOREIGN KEY ([ProductId])
+    REFERENCES [dbo].[Products]
+        ([Id])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_ProductBookingLog'
+CREATE INDEX [IX_FK_ProductBookingLog]
+ON [dbo].[BookingLogs]
+    ([ProductId]);
+GO
+
+-- Creating foreign key on [BookingLogId] in table 'Payments'
+ALTER TABLE [dbo].[Payments]
+ADD CONSTRAINT [FK_BookingLogPayment]
+    FOREIGN KEY ([BookingLogId])
+    REFERENCES [dbo].[BookingLogs]
+        ([Id])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_BookingLogPayment'
+CREATE INDEX [IX_FK_BookingLogPayment]
+ON [dbo].[Payments]
+    ([BookingLogId]);
 GO
 
 -- --------------------------------------------------

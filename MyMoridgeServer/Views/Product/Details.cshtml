@@ -1,0 +1,57 @@
+﻿@model MyMoridgeServer.Models.Product
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>Product</legend>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Name)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Name)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.ProductInformation)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.ProductInformation)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.HoursToBook)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.HoursToBook)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.DaysBeforeBooking)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.DaysBeforeBooking)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.PriceExclVat)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.PriceExclVat)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.PriceInclVat)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.PriceInclVat)
+    </div>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

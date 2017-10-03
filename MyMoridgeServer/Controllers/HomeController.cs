@@ -78,7 +78,7 @@ namespace MyMoridgeServer.Controllers
         {
             Booking booking = new Booking();
 
-            var events = booking.Get15AvailableDatesForBookingSwedishOffset();
+            var events = booking.GetAvailableDatesForBookingSwedishOffset(1, 15);
 
             return events;
         }
